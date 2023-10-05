@@ -1,0 +1,27 @@
+{
+  "name": "hippostats",
+  "version": "0.1.0",
+  "description": "Lightweight data analysis in your browser",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "npx vitest --run",
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/thoughtspile/hippostats.git"
+  },
+  "author": "Vladimir Klepov v.klepov@gmail.com",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/thoughtspile/hippostats/issues"
+  },
+  "homepage": "https://github.com/thoughtspile/hippostats#readme",
+  "devDependencies": {
+    "astro": "^3.2.3"
+  }
+}
