@@ -21,7 +21,14 @@
     "url": "https://github.com/thoughtspile/hippostats/issues"
   },
   "homepage": "https://github.com/thoughtspile/hippostats#readme",
+  "dependencies": {
+    "@astrojs/solid-js": "^3.0.2",
+    "astro": "^3.2.3",
+    "papaparse": "^5.4.1",
+    "solid-js": "^1.7.12",
+    "spectre.css": "^0.5.9"
+  },
   "devDependencies": {
-    "astro": "^3.2.3"
+    "@types/papaparse": "^5.3.9"
   }
 }
