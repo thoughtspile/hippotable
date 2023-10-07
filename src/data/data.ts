@@ -1,5 +1,4 @@
 import Papa from 'papaparse';
-import csv from './data.csv?raw';
 
 interface DataTable {
   length: number;
@@ -9,8 +8,13 @@ interface DataTable {
   data: unknown[][];
 }
 
-export async function parseCsv(csv: string): Promise<DataTable> {
-  const res = Papa.parse(csv, { header: false });
+export async function parseCsv(csv: File): Promise<DataTable> {
+  const res = await new Promise<Papa.ParseResult<unknown>>((ok) => {
+    Papa.parse(csv, { 
+      header: false,
+      complete: res => ok(res)
+    });
+  });
   const [names, ...table] = res.data as [string[], ...unknown[][]];
   return {
     length: table.length,
@@ -18,5 +22,3 @@ export async function parseCsv(csv: string): Promise<DataTable> {
     data: table,
   };
 }
-
-export const data = parseCsv(csv);
