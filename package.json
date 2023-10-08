@@ -25,6 +25,7 @@
     "@astrojs/solid-js": "^3.0.2",
     "astro": "^3.2.3",
     "papaparse": "^5.4.1",
+    "solid-icons": "^1.0.12",
     "solid-js": "^1.7.12",
     "spectre.css": "^0.5.9"
   },
