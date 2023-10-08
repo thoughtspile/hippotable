@@ -1,8 +1,10 @@
-import { Show, createResource, createSignal } from 'solid-js';
+import { Show, createMemo, createResource, createSignal } from 'solid-js';
 import { parseCsv } from '../data/data';
+import { desc } from 'arquero';
 import { FiUpload } from 'solid-icons/fi';
 import './Dashboard.css';
 import type ColumnTable from 'arquero/dist/types/table/column-table';
+import { FaSolidSort, FaSolidSortDown, FaSolidSortUp } from 'solid-icons/fa';
 
 type WelcomeProps = { onUpload: (f: File) => void; loading: boolean };
 function Welcome(props: WelcomeProps) {
@@ -16,16 +18,43 @@ function Welcome(props: WelcomeProps) {
   )
 }
 
+const Sort = (props: { dir: 'asc' | 'desc', active: boolean }) => (
+  <>
+    {!props.active && <FaSolidSort />}
+    {props.active && props.dir === 'desc' && <FaSolidSortUp />}
+    {props.active && props.dir === 'asc' && <FaSolidSortDown />}
+  </>
+);
+
 function Table({ table }: { table: ColumnTable }) {
+  const [order, setOrder] = createSignal<{ col: string; dir: 'asc' | 'desc' }>({
+    col: null,
+    dir: 'asc',
+  });
+  
+  const orderBy = (col: string) => {
+    setOrder(o => ({ col, dir: col === o.col && o.dir === 'asc' ? 'desc' : 'asc' }));
+  };
+  
+  const view = createMemo(() => {
+    const { col, dir } = order();
+    return col ? table.orderby(dir === 'desc' ? desc(col) : col) : table;
+  });
+
   const cols = table.columnNames();
-  const indices = [...table.indices()];
+  const indices = () => [...view().indices()];
   return (
     <table class="table">
       <thead>
-        {cols.map(col => <th>{col}</th>)}
+        {cols.map(col => 
+          <th onClick={() => orderBy(col)}>
+            {col}
+            <Sort dir={order().dir} active={order().col === col} />
+          </th>
+        )}
       </thead>
       <tbody>
-        {indices.map(i => (
+        {indices().map(i => (
           <tr>{cols.map(col => <td>{table.get(col, i)}</td>)}</tr>
         ))}
       </tbody>
