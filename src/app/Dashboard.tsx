@@ -2,6 +2,7 @@ import { Show, createResource, createSignal } from 'solid-js';
 import { parseCsv } from '../data/data';
 import { FiUpload } from 'solid-icons/fi';
 import './Dashboard.css';
+import type ColumnTable from 'arquero/dist/types/table/column-table';
 
 type WelcomeProps = { onUpload: (f: File) => void; loading: boolean };
 function Welcome(props: WelcomeProps) {
@@ -15,22 +16,30 @@ function Welcome(props: WelcomeProps) {
   )
 }
 
+function Table({ table }: { table: ColumnTable }) {
+  const cols = table.columnNames();
+  const indices = [...table.indices()];
+  return (
+    <table class="table">
+      <thead>
+        {cols.map(col => <th>{col}</th>)}
+      </thead>
+      <tbody>
+        {indices.map(i => (
+          <tr>{cols.map(col => <td>{table.get(col, i)}</td>)}</tr>
+        ))}
+      </tbody>
+    </table>
+  )
+}
+
 export function Dashboard() {
   const [file, setFile] = createSignal<File>(null);
-  const [data] = createResource(file, file => file ? parseCsv(file) : null);
+  const [table] = createResource(file, file => file ? parseCsv(file) : null);
 
   return (
-    <Show when={data()} fallback={<Welcome onUpload={setFile} loading={!!file()} />}>
-      <table class="table">
-        <thead>
-          {data().cols.map(col => <th>{col.name}</th>)}
-        </thead>
-        <tbody>
-          {data().data.map(row => (
-            <tr>{row.map(val => <td>{val}</td>)}</tr>
-          ))}
-        </tbody>
-      </table>
+    <Show when={table()} fallback={<Welcome onUpload={setFile} loading={!!file()} />}>
+      <Table table={table()} />
     </Show>
   );
 }
