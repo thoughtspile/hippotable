@@ -4,3 +4,27 @@
   align-items: center;
   justify-content: center;
 }
+
+table {
+  table-layout: fixed;
+  display: flex;
+  height: 100vh;
+  flex-direction: column;
+}
+
+thead {
+  width: 100%;
+}
+
+tbody {
+  display: block;
+  width: 100%;
+  flex-grow: 1;
+  overflow: auto;
+}
+
+tr {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

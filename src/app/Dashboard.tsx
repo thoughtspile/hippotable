@@ -5,6 +5,8 @@ import { FiUpload } from 'solid-icons/fi';
 import './Dashboard.css';
 import type ColumnTable from 'arquero/dist/types/table/column-table';
 import { FaSolidSort, FaSolidSortDown, FaSolidSortUp } from 'solid-icons/fa';
+import { createVirtualizer, createWindowVirtualizer } from '@tanstack/solid-virtual';
+import { vi } from 'vitest';
 
 type WelcomeProps = { onUpload: (f: File) => void; loading: boolean };
 function Welcome(props: WelcomeProps) {
@@ -42,7 +44,16 @@ function Table({ table }: { table: ColumnTable }) {
   });
 
   const cols = table.columnNames();
-  const indices = () => [...view().indices()];
+
+  let tbodyRef: HTMLTableSectionElement;
+  const virtualizer = createVirtualizer({
+    count: table.numRows() + 1,
+    getScrollElement: () => tbodyRef,
+    estimateSize: () => 49,
+    overscan: 5,
+  });
+  const remainingSize = () => virtualizer.getTotalSize() - virtualizer.getVirtualItems().at(-1).end;
+
   return (
     <table class="table">
       <thead>
@@ -53,10 +64,12 @@ function Table({ table }: { table: ColumnTable }) {
           </th>
         )}
       </thead>
-      <tbody>
-        {indices().map(i => (
-          <tr>{cols.map(col => <td>{table.get(col, i)}</td>)}</tr>
+      <tbody ref={tbodyRef}>
+        <tr style={{ height: `${virtualizer.getVirtualItems()[0].start}px` }} />
+        {virtualizer.getVirtualItems().map((item) => (
+          <tr>{cols.map(col => <td>{view().get(col, item.index)}</td>)}</tr>
         ))}
+        <tr style={{ height: `${remainingSize()}px` }}/>
       </tbody>
     </table>
   )

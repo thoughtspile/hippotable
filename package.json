@@ -23,6 +23,8 @@
   "homepage": "https://github.com/thoughtspile/hippostats#readme",
   "dependencies": {
     "@astrojs/solid-js": "^3.0.2",
+    "@tanstack/solid-virtual": "^3.0.0-beta.6",
+    "@tanstack/virtual-core": "^3.0.0-alpha.1",
     "arquero": "^5.2.0",
     "astro": "^3.2.3",
     "solid-icons": "^1.0.12",
