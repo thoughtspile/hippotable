@@ -5,16 +5,26 @@ import { FiUpload } from 'solid-icons/fi';
 import './Dashboard.css';
 import type ColumnTable from 'arquero/dist/types/table/column-table';
 import { FaSolidSort, FaSolidSortDown, FaSolidSortUp } from 'solid-icons/fa';
-import { createVirtualizer, createWindowVirtualizer } from '@tanstack/solid-virtual';
-import { vi } from 'vitest';
+import { createVirtualizer } from '@tanstack/solid-virtual';
 
-type WelcomeProps = { onUpload: (f: File) => void; loading: boolean };
+type WelcomeProps = {
+  loading: boolean;
+  onSubmit: (f: File | string) => void; 
+};
 function Welcome(props: WelcomeProps) {
+  function onUrlSubmit(e: Event & { currentTarget: HTMLFormElement }) {
+    e.preventDefault();
+    props.onSubmit(new FormData(e.currentTarget).get('href') as string);
+  }
   return (
     <section class="grid-hero container grid-lg text-center">
+      <form class="input-group" onSubmit={onUrlSubmit}>
+        <input class="form-input input-lg" name="href" />
+        <button class="btn btn-lg input-group-btn">Go</button>
+      </form>
       <label class="btn btn-primary btn-lg" classList={{ loading: props.loading }}>
         Upload CSV <FiUpload />
-        <input type="file" onInput={e => props.onUpload(e.currentTarget.files[0])} />
+        <input type="file" onInput={e => props.onSubmit(e.currentTarget.files[0])} />
       </label>
     </section>
   )
@@ -76,11 +86,20 @@ function Table({ table }: { table: ColumnTable }) {
 }
 
 export function Dashboard() {
-  const [file, setFile] = createSignal<File>(null);
+  const [file, setFile] = createSignal<string>(import.meta.env.SSR ? null : new URLSearchParams(location.search).get('source'));
   const [table] = createResource(file, file => file ? parseCsv(file) : null);
+  function onPickSource(src: File | string) {
+    if (src instanceof File) {
+      return setFile(URL.createObjectURL(src));
+    }
+    const selfUrl = new URL(location.href);
+    selfUrl.searchParams.set('source', src);
+    history.pushState({}, '', selfUrl);
+    setFile(src);
+  }
 
   return (
-    <Show when={table()} fallback={<Welcome onUpload={setFile} loading={!!file()} />}>
+    <Show when={table()} fallback={<Welcome onSubmit={onPickSource} loading={!!file()} />}>
       <Table table={table()} />
     </Show>
   );
