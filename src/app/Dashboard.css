@@ -10,21 +10,39 @@ table {
   display: flex;
   height: 100vh;
   flex-direction: column;
+  font-family: monospace;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: auto;
+  border-collapse: collapse;
 }
 
 thead {
-  width: 100%;
+  display: block;
+  position: sticky;
+  top: 0;
 }
 
 tbody {
-  display: block;
-  width: 100%;
+  width: 15000px;
   flex-grow: 1;
-  overflow: auto;
 }
 
 tr {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+table td, table th {
+  border-bottom: 1px solid #dadee4;
+  padding: 0 6px;
+  overflow: hidden;
+  text-align: left;
+  text-overflow: ellipsis;
+}
+
+th {
+  background-color: #fff;
+  display: inline-block;
 }

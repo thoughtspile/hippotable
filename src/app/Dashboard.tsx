@@ -1,4 +1,4 @@
-import { Show, createMemo, createResource, createSignal } from 'solid-js';
+import { Show, createEffect, createMemo, createResource, createSignal } from 'solid-js';
 import { parseCsv } from '../data/data';
 import { desc } from 'arquero';
 import { FiUpload } from 'solid-icons/fi';
@@ -30,11 +30,11 @@ function Welcome(props: WelcomeProps) {
   )
 }
 
-const Sort = (props: { dir: 'asc' | 'desc', active: boolean }) => (
+const Sort = (props: { dir: 'asc' | 'desc' | null }) => (
   <>
-    {!props.active && <FaSolidSort />}
-    {props.active && props.dir === 'desc' && <FaSolidSortUp />}
-    {props.active && props.dir === 'asc' && <FaSolidSortDown />}
+    {!props.dir && <FaSolidSort />}
+    {props.dir === 'desc' && <FaSolidSortUp />}
+    {props.dir === 'asc' && <FaSolidSortDown />}
   </>
 );
 
@@ -43,6 +43,8 @@ function Table({ table }: { table: ColumnTable }) {
     col: null,
     dir: 'asc',
   });
+
+  const [colWidths, setColWidths] = createSignal(new Map<string, string>());
   
   const orderBy = (col: string) => {
     setOrder(o => ({ col, dir: col === o.col && o.dir === 'asc' ? 'desc' : 'asc' }));
@@ -55,29 +57,44 @@ function Table({ table }: { table: ColumnTable }) {
 
   const cols = table.columnNames();
 
-  let tbodyRef: HTMLTableSectionElement;
+  let tableRef: HTMLTableElement;
   const virtualizer = createVirtualizer({
     count: table.numRows() + 1,
-    getScrollElement: () => tbodyRef,
-    estimateSize: () => 49,
+    getScrollElement: () => tableRef,
+    estimateSize: () => 19,
     overscan: 5,
   });
   const remainingSize = () => virtualizer.getTotalSize() - virtualizer.getVirtualItems().at(-1).end;
+  
+  createEffect(() => {
+    // trigger
+    virtualizer.getVirtualItems()[0];
+    const res = new Map()
+    const headers = tableRef.querySelectorAll('th');
+    tableRef.querySelectorAll('tr:nth-child(2) td').forEach((td, i) => {
+      res.set(cols[i], `${Math.ceil(Math.min(Math.max(td.clientWidth, headers[i].clientWidth), 1000))}px`);
+    });
+    setColWidths(res);
+  });
 
   return (
-    <table class="table">
+    <table ref={tableRef}>
       <thead>
         {cols.map(col => 
-          <th onClick={() => orderBy(col)}>
+          <th onClick={() => orderBy(col)} style={{ width: colWidths().get(col) }}>
             {col}
-            <Sort dir={order().dir} active={order().col === col} />
+            <Sort dir={order().col === col ? order().dir : null} />
           </th>
         )}
       </thead>
-      <tbody ref={tbodyRef}>
+      <tbody>
         <tr style={{ height: `${virtualizer.getVirtualItems()[0].start}px` }} />
         {virtualizer.getVirtualItems().map((item) => (
-          <tr>{cols.map(col => <td>{view().get(col, item.index)}</td>)}</tr>
+          <tr>{cols.map(col => {
+            const style = { 'min-width': colWidths().get(col), "max-width": '1000px' };
+            const val = view().get(col, item.index)
+            return <td style={style}>{val == null ? null : String(val)}</td>
+          })}</tr>
         ))}
         <tr style={{ height: `${remainingSize()}px` }}/>
       </tbody>
