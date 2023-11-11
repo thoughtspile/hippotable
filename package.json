@@ -30,5 +30,8 @@
     "solid-icons": "^1.0.12",
     "solid-js": "^1.7.12",
     "spectre.css": "^0.5.9"
+  },
+  "devDependencies": {
+    "solid-devtools": "^0.28.1"
   }
 }

@@ -1,6 +1,7 @@
 ---
 import { Dashboard } from '../app/Dashboard.tsx';
 import 'spectre.css/dist/spectre.min.css';
+import { Devtools } from '../app/Devtools';
 ---
 
 <html>
@@ -10,6 +11,7 @@ import 'spectre.css/dist/spectre.min.css';
   </head>
   <body>
     <Dashboard client:load />
+    <Devtools client:only />
   </body>
 </html>
 

@@ -1,4 +1,4 @@
-import { Show, createEffect, createMemo, createResource, createSignal } from 'solid-js';
+import { For, Show, createEffect, createMemo, createResource, createSignal, onCleanup, onMount } from 'solid-js';
 import { parseCsv } from '../data/data';
 import { desc } from 'arquero';
 import { FiUpload } from 'solid-icons/fi';
@@ -23,7 +23,7 @@ function Welcome(props: WelcomeProps) {
         <button class="btn btn-lg input-group-btn">Go</button>
       </form>
       <label class="btn btn-primary btn-lg" classList={{ loading: props.loading }}>
-        Upload CSV <FiUpload />
+        Upload CSV
         <input type="file" onInput={e => props.onSubmit(e.currentTarget.files[0])} />
       </label>
     </section>
@@ -66,9 +66,7 @@ function Table({ table }: { table: ColumnTable }) {
   });
   const remainingSize = () => virtualizer.getTotalSize() - virtualizer.getVirtualItems().at(-1).end;
   
-  createEffect(() => {
-    // trigger
-    virtualizer.getVirtualItems()[0];
+  const resizeObserver = new ResizeObserver(() => {
     const res = new Map()
     const headers = tableRef.querySelectorAll('th');
     tableRef.querySelectorAll('tr:nth-child(2) td').forEach((td, i) => {
@@ -76,6 +74,12 @@ function Table({ table }: { table: ColumnTable }) {
     });
     setColWidths(res);
   });
+  onMount(() => {
+    for (const td of tableRef.querySelectorAll('tr:first-child td')) {
+      resizeObserver.observe(td);
+    }
+  });
+  onCleanup(() => resizeObserver.disconnect());
 
   return (
     <table ref={tableRef}>
@@ -88,22 +92,39 @@ function Table({ table }: { table: ColumnTable }) {
         )}
       </thead>
       <tbody>
-        <tr style={{ height: `${virtualizer.getVirtualItems()[0].start}px` }} />
-        {virtualizer.getVirtualItems().map((item) => (
-          <tr>{cols.map(col => {
-            const style = { 'min-width': colWidths().get(col), "max-width": '1000px' };
-            const val = view().get(col, item.index)
-            return <td style={style}>{val == null ? null : String(val)}</td>
-          })}</tr>
-        ))}
+        <tr style={{ height: `${virtualizer.getVirtualItems()[0].start}px` }}>
+          <For each={cols}>{col => <td style={{ 'min-width': colWidths().get(col), "max-width": '1000px' }} />}</For>
+        </tr>
+        <For each={virtualizer.getVirtualItems().map((el) => el.index)}>{(index) => {
+          // subscribe to view updates (order / filter)
+          return <Row table={view} colWidths={colWidths()} cols={cols} index={index} />;
+        }}</For>
         <tr style={{ height: `${remainingSize()}px` }}/>
       </tbody>
     </table>
   )
 }
 
+type RowProps = { cols: string[], table: any, colWidths: any, index: number };
+function Row(props: RowProps) {
+  return (
+    <tr>
+      <For each={props.cols}>{col => {
+        const style = { 'min-width': props.colWidths.get(col), "max-width": '1000px' };
+        return <td style={style}>{stringify(props.table().get(col, props.index))}</td>
+      }}</For>
+    </tr>
+  );
+}
+
+const stringify = (val: unknown) => val == null ? null : String(val);
+
 export function Dashboard() {
-  const [file, setFile] = createSignal<string>(import.meta.env.SSR ? null : new URLSearchParams(location.search).get('source'));
+  const [file, setFile] = createSignal<string>(null);
+  onMount(() => {
+    const source = new URLSearchParams(location.search).get('source');
+    source && setFile(source);
+  });
   const [table] = createResource(file, file => file ? parseCsv(file) : null);
   function onPickSource(src: File | string) {
     if (src instanceof File) {
