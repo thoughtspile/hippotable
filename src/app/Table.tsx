@@ -4,21 +4,64 @@ import './Table.css';
 import type ColumnTable from 'arquero/dist/types/table/column-table';
 import { FaSolidSort, FaSolidSortDown, FaSolidSortUp } from 'solid-icons/fa';
 import { createVirtualizer } from '@tanstack/solid-virtual';
+import { FilterPanel } from './FilterPanel';
+import { conditionSymbol, type ColumnDescriptor, type Condition, type Filter, isFilterComplete } from './filter';
 
 type Order = { col: string; dir: 'asc' | 'desc' };
+type BaseType = "string" | "number" | "boolean";
 
-export function Table({ table }: { table: ColumnTable }) {
+function getConditions(t: BaseType): Condition[] {
+  const base: Condition[] = ['eq', 'neq'];
+  const ordinal: Condition[] = ['gt', 'gte', 'lt', 'lte'];
+  return [...base, ...(t === 'number' ? ordinal : [])];
+}
+
+function castValue(v: string, target: BaseType) {
+  if (target === 'boolean') return v === 'true';
+  if (target === 'number') return Number(v);
+  return v;
+}
+
+export function Table(props: { table: ColumnTable }) {
   const [order, setOrder] = createSignal<Order>({ col: null, dir: 'asc' });
   function orderBy(col: string) {
     setOrder(o => ({ col, dir: col === o.col && o.dir === 'asc' ? 'desc' : 'asc' }));
   }
 
+  const [filter, setFilter] = createSignal<Filter[]>([]);
+
   const view = createMemo(() => {
     const { col, dir } = order();
+    let { table } = props;
+    for (const f of filter()) {
+      if (!isFilterComplete(f)) continue;
+      table = table.filter(`d.${f.name} ${conditionSymbol[f.condition]} ${JSON.stringify(f.value)}`);
+    }
     return col ? table.orderby(dir === 'desc' ? desc(col) : col) : table;
   });
 
-  return <TableView table={view()} orderBy={orderBy} order={order()} />;
+  const columnDescriptor = createMemo(() => {
+    return props.table.columnNames().map((col): ColumnDescriptor => {
+      const sample = props.table.params({ col }).filter((v, $) => v[$.col] != null).get(col, 0);
+      const colType = typeof sample as BaseType;
+      return {
+        name: col,
+        availableConditions: getConditions(colType),
+        castValue: (v) => castValue(v, colType),
+      }
+    });
+  });
+
+  return (
+    <>
+      <TableView table={view()} orderBy={orderBy} order={order()} />
+      <FilterPanel
+        filter={filter()}
+        update={setFilter}
+        columns={columnDescriptor()}
+      />
+    </>
+  );
 }
 
 type TableViewProps = {
