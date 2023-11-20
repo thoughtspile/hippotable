@@ -1,6 +1,7 @@
-import { For } from 'solid-js';
+import { For, Index, Show, createEffect, createMemo, createSignal } from 'solid-js';
 import styles from './FilterPanel.module.css';
-import { type Condition, type Filter, type ColumnDescriptor, conditionSymbol } from './filter';
+import sortBy from 'just-sort-by';
+import { type Condition, type Filter, type ColumnDescriptor, conditionSymbol, isFilterComplete } from './filter';
 
 interface FilterPanelProps {
   filter: Filter[];
@@ -9,22 +10,32 @@ interface FilterPanelProps {
 }
 
 export function FilterPanel(props: FilterPanelProps) {
+  const [visible, setVisible] = createSignal(false);
+  const [staging, setStaging] = createSignal<Partial<Filter>[]>(props.filter);
+  function onSubmit(e: Event) {
+    e.preventDefault();
+    props.update(staging().filter(isFilterComplete));
+  }
+  const columns = createMemo(() => sortBy(props.columns, c => c.name));
   return (
-    <form onSubmit={e => e.preventDefault()} class={styles.FilterPanel}>
-      <For each={props.filter}>{(filter, i) => 
+    <Show when={visible()} fallback={<button onClick={() => setVisible(true)} class={styles.FloatingButton}>f</button>}>
+      <form onSubmit={onSubmit} class={styles.FilterPanel}>
+        <button type="button" onClick={() => setVisible(false)} class={styles.FilterPanel__close}>x</button>
+        <Index each={staging()}>{(filter, i) => 
+          <FilterControl 
+            columns={columns()}
+            filter={filter()} 
+            update={f => setStaging(s => s.map((base, ib) => i === ib ? f : base))} 
+          />
+        }</Index>
         <FilterControl 
-          columns={props.columns}
-          filter={filter} 
-          update={f => props.update(props.filter.map((base, ib) => i() === ib ? f : base))} 
+          columns={columns()}
+          filter={{}}
+          update={f => setStaging(s => s.concat([f]))} 
         />
-      }</For>
-      <FilterControl 
-        columns={props.columns}
-        filter={{}}
-        update={f => props.update(props.filter.concat([f]))} 
-      />
-      <button>Filter</button>
-    </form>
+        <button>Filter</button>
+      </form>
+    </Show>
   )
 }
 
@@ -36,7 +47,7 @@ interface FilterControlProps {
 function FilterControl(props: FilterControlProps) {
   const activeColumn = props.columns.find(c => c.name === props.filter.name);
   return (
-    <label>
+    <label class={styles.FilterControl}>
       <select 
         value={props.filter.name}
         onChange={e => props.update({ ...props.filter, name: e.target.value })}

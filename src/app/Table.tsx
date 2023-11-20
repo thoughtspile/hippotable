@@ -1,11 +1,11 @@
-import { For, createMemo, createSignal, onCleanup, onMount } from 'solid-js';
+import { For, createEffect, createMemo, createSignal, onCleanup, onMount } from 'solid-js';
 import { desc } from 'arquero';
 import './Table.css';
 import type ColumnTable from 'arquero/dist/types/table/column-table';
 import { FaSolidSort, FaSolidSortDown, FaSolidSortUp } from 'solid-icons/fa';
 import { createVirtualizer } from '@tanstack/solid-virtual';
 import { FilterPanel } from './FilterPanel';
-import { conditionSymbol, type ColumnDescriptor, type Condition, type Filter, isFilterComplete } from './filter';
+import { conditionSymbol, type ColumnDescriptor, type Condition, type Filter } from './filter';
 
 type Order = { col: string; dir: 'asc' | 'desc' };
 type BaseType = "string" | "number" | "boolean";
@@ -34,7 +34,6 @@ export function Table(props: { table: ColumnTable }) {
     const { col, dir } = order();
     let { table } = props;
     for (const f of filter()) {
-      if (!isFilterComplete(f)) continue;
       table = table.filter(`d.${f.name} ${conditionSymbol[f.condition]} ${JSON.stringify(f.value)}`);
     }
     return col ? table.orderby(dir === 'desc' ? desc(col) : col) : table;
@@ -74,8 +73,9 @@ function TableView(props: TableViewProps) {
   const cols = props.table.columnNames();
 
   let tableRef: HTMLTableElement;
+  const numRows = createMemo(() => props.table.numRows());
   const virtualizer = createVirtualizer({
-    count: props.table.numRows() + 1,
+    count: numRows(),
     getScrollElement: () => tableRef,
     estimateSize: () => 19,
     overscan: 5,
@@ -112,7 +112,7 @@ function TableView(props: TableViewProps) {
           <For each={cols}>{col => <td style={{ 'min-width': colWidths().get(col), "max-width": '1000px' }} />}</For>
         </tr>
         <For each={virtualizer.getVirtualItems().map((el) => el.index)}>{(index) => {
-          return <Row table={props.table} colWidths={colWidths()} cols={cols} index={index} />;
+          return <Row table={props.table} cols={cols} index={index} />;
         }}</For>
         <tr style={{ height: `${remainingSize()}px` }}/>
       </tbody>
@@ -123,16 +123,12 @@ function TableView(props: TableViewProps) {
 type RowProps = { 
   cols: string[];
   table: ColumnTable;
-  colWidths: Map<string, string>;
   index: number;
 };
 function Row(props: RowProps) {
   return (
     <tr>
-      <For each={props.cols}>{col => {
-        const style = { 'min-width': props.colWidths.get(col), "max-width": '1000px' };
-        return <td style={style}>{stringify(props.table.get(col, props.index))}</td>
-      }}</For>
+      <For each={props.cols}>{col => <td>{stringify(props.table.get(col, props.index))}</td>}</For>
     </tr>
   );
 }

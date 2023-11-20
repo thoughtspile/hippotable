@@ -27,6 +27,7 @@
     "@tanstack/virtual-core": "^3.0.0-alpha.1",
     "arquero": "^5.2.0",
     "astro": "^3.2.3",
+    "just-sort-by": "^3.2.0",
     "solid-icons": "^1.0.12",
     "solid-js": "^1.7.12",
     "spectre.css": "^0.5.9"

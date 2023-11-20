@@ -22,6 +22,6 @@ export const conditionSymbol: Record<Condition, string> = {
 };
 
 
-export function isFilterComplete(f: Partial<Filter>) {
+export function isFilterComplete(f: Partial<Filter>): f is Filter {
   return f.name && f.condition && f.value != null;
 }
