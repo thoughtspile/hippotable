@@ -1,6 +1,7 @@
-import { For, Index, Show, createEffect, createMemo, createSignal } from 'solid-js';
+import { For, Index, Show, createMemo, createSignal } from 'solid-js';
 import styles from './FilterPanel.module.css';
 import sortBy from 'just-sort-by';
+import { FaSolidFilter, FaSolidXmark } from 'solid-icons/fa';
 import { type Condition, type Filter, type ColumnDescriptor, conditionSymbol, isFilterComplete } from './filter';
 
 interface FilterPanelProps {
@@ -10,33 +11,38 @@ interface FilterPanelProps {
 }
 
 export function FilterPanel(props: FilterPanelProps) {
+  const columns = createMemo(() => sortBy(props.columns, c => c.name));
   const [visible, setVisible] = createSignal(false);
   const [staging, setStaging] = createSignal<Partial<Filter>[]>(props.filter);
+  function filterList() {
+    const items = staging();
+    return !items.length || items.every(isFilterComplete) ? [...items, {}] : items;
+  }
+  function setFilter(i: number, f: Partial<Filter>) {
+    setStaging(s => s.length === i ? s.concat([f]) : s.map((base, ib) => i === ib ? f : base))
+  }
   function onSubmit(e: Event) {
     e.preventDefault();
     props.update(staging().filter(isFilterComplete));
   }
-  const columns = createMemo(() => sortBy(props.columns, c => c.name));
+  
   return (
-    <Show when={visible()} fallback={<button onClick={() => setVisible(true)} class={styles.FloatingButton}>f</button>}>
+    <Show when={visible()} fallback={<OpenButton open={() => setVisible(true)} />}>
       <form onSubmit={onSubmit} class={styles.FilterPanel}>
-        <button type="button" onClick={() => setVisible(false)} class={styles.FilterPanel__close}>x</button>
-        <Index each={staging()}>{(filter, i) => 
-          <FilterControl 
-            columns={columns()}
-            filter={filter()} 
-            update={f => setStaging(s => s.map((base, ib) => i === ib ? f : base))} 
-          />
+        <button type="button" onClick={() => setVisible(false)} class={styles.FilterPanel__close}>
+          <FaSolidXmark />
+        </button>
+        <Index each={filterList()}>{(filter, i) => 
+          <FilterControl columns={columns()} filter={filter()} update={f => setFilter(i, f)} />
         }</Index>
-        <FilterControl 
-          columns={columns()}
-          filter={{}}
-          update={f => setStaging(s => s.concat([f]))} 
-        />
         <button>Filter</button>
       </form>
     </Show>
   )
+}
+
+function OpenButton(props: { open: () => void }) {
+  return <button onClick={props.open} class={styles.FloatingButton}><FaSolidFilter /></button>;
 }
 
 interface FilterControlProps {
@@ -45,7 +51,7 @@ interface FilterControlProps {
   columns: ColumnDescriptor[];
 }
 function FilterControl(props: FilterControlProps) {
-  const activeColumn = props.columns.find(c => c.name === props.filter.name);
+  const activeColumn = () => props.columns.find(c => c.name === props.filter.name);
   return (
     <label class={styles.FilterControl}>
       <select 
@@ -57,18 +63,18 @@ function FilterControl(props: FilterControlProps) {
         }</For>
       </select>
       <select 
-        disabled={!activeColumn} 
+        disabled={!activeColumn()} 
         value={props.filter.condition}
         onChange={e => props.update({ ...props.filter, condition: e.target.value as Condition })}
       >
-        <For each={activeColumn?.availableConditions}>{cond => 
+        <For each={activeColumn()?.availableConditions}>{cond => 
           <option value={cond}>{conditionSymbol[cond]}</option>
         }</For>
       </select>
       <input 
-        disabled={!activeColumn}
+        disabled={!activeColumn()}
         value={props.filter.value == null ? '' : String(props.filter.value)}
-        onChange={e => props.update({ ...props.filter, value: activeColumn.castValue(e.target.value) })}
+        onChange={e => props.update({ ...props.filter, value: activeColumn().castValue(e.target.value) })}
       />
     </label>
   );

@@ -1,26 +1,13 @@
-import { For, createEffect, createMemo, createSignal, onCleanup, onMount } from 'solid-js';
+import { For, createMemo, createSignal, onCleanup, onMount } from 'solid-js';
 import { desc } from 'arquero';
 import './Table.css';
 import type ColumnTable from 'arquero/dist/types/table/column-table';
-import { FaSolidSort, FaSolidSortDown, FaSolidSortUp } from 'solid-icons/fa';
+import { FaSolidSortDown, FaSolidSortUp } from 'solid-icons/fa';
 import { createVirtualizer } from '@tanstack/solid-virtual';
 import { FilterPanel } from './FilterPanel';
-import { conditionSymbol, type ColumnDescriptor, type Condition, type Filter } from './filter';
+import { type Filter, toColumnDescriptor, applyFilters } from './filter';
 
 type Order = { col: string; dir: 'asc' | 'desc' };
-type BaseType = "string" | "number" | "boolean";
-
-function getConditions(t: BaseType): Condition[] {
-  const base: Condition[] = ['eq', 'neq'];
-  const ordinal: Condition[] = ['gt', 'gte', 'lt', 'lte'];
-  return [...base, ...(t === 'number' ? ordinal : [])];
-}
-
-function castValue(v: string, target: BaseType) {
-  if (target === 'boolean') return v === 'true';
-  if (target === 'number') return Number(v);
-  return v;
-}
 
 export function Table(props: { table: ColumnTable }) {
   const [order, setOrder] = createSignal<Order>({ col: null, dir: 'asc' });
@@ -31,25 +18,12 @@ export function Table(props: { table: ColumnTable }) {
   const [filter, setFilter] = createSignal<Filter[]>([]);
 
   const view = createMemo(() => {
+    const table = applyFilters(props.table, filter());
     const { col, dir } = order();
-    let { table } = props;
-    for (const f of filter()) {
-      table = table.filter(`d.${f.name} ${conditionSymbol[f.condition]} ${JSON.stringify(f.value)}`);
-    }
     return col ? table.orderby(dir === 'desc' ? desc(col) : col) : table;
   });
 
-  const columnDescriptor = createMemo(() => {
-    return props.table.columnNames().map((col): ColumnDescriptor => {
-      const sample = props.table.params({ col }).filter((v, $) => v[$.col] != null).get(col, 0);
-      const colType = typeof sample as BaseType;
-      return {
-        name: col,
-        availableConditions: getConditions(colType),
-        castValue: (v) => castValue(v, colType),
-      }
-    });
-  });
+  const columnDescriptor = createMemo(() => toColumnDescriptor(props.table));
 
   return (
     <>
@@ -100,12 +74,9 @@ function TableView(props: TableViewProps) {
   return (
     <table ref={tableRef}>
       <thead>
-        {cols.map(col => 
-          <th onClick={() => props.orderBy(col)} style={{ width: colWidths().get(col) }}>
-            {col}
-            <Sort dir={props.order.col === col ? props.order.dir : null} />
-          </th>
-        )}
+        <For each={cols}>{col => 
+          <HeaderCell orderBy={props.orderBy} order={props.order} width={colWidths().get(col)} name={col} />
+        }</For>
       </thead>
       <tbody>
         <tr style={{ height: `${virtualizer.getVirtualItems()[0].start}px` }}>
@@ -133,13 +104,14 @@ function Row(props: RowProps) {
   );
 }
 
-function Sort(props: { dir: 'asc' | 'desc' | null }) {
+function HeaderCell(props: { order: Order, name: string; orderBy: (c: string) => void; width: string }) {
+  const dir = () => props.order.col === props.name ? props.order.dir : null;
   return (
-    <>
-      {!props.dir && <FaSolidSort />}
-      {props.dir === 'desc' && <FaSolidSortUp />}
-      {props.dir === 'asc' && <FaSolidSortDown />}
-    </>
+    <th onClick={() => props.orderBy(props.name)} style={{ width: props.width }}>
+      {props.name}
+      {dir() === 'desc' && <FaSolidSortUp />}
+      {dir() === 'asc' && <FaSolidSortDown />}
+    </th>
   );
 }
 
