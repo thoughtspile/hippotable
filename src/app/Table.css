@@ -40,6 +40,8 @@ td, th {
   overflow: hidden;
   text-align: left;
   text-overflow: ellipsis;
+  box-sizing: border-box;
+  max-width: 1000px;
 }
 
 th {

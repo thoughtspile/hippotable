@@ -37,6 +37,9 @@ export function Table(props: { table: ColumnTable }) {
   );
 }
 
+const rowHeight = 19;
+const totalPaddingX = 12;
+
 type TableViewProps = {
   table: ColumnTable;
   order: Order;
@@ -51,10 +54,15 @@ function TableView(props: TableViewProps) {
   const virtualizer = createVirtualizer({
     count: numRows(),
     getScrollElement: () => tableRef,
-    estimateSize: () => 19,
+    estimateSize: () => rowHeight,
     overscan: 5,
   });
-  const remainingSize = () => virtualizer.getTotalSize() - virtualizer.getVirtualItems().at(-1).end;
+  function remainingSize() {
+    const total = numRows();
+    const lastItem = virtualizer.getVirtualItems().at(-1);
+    const lastIndex = Math.min(lastItem.index, total);
+    return (total - lastIndex) * rowHeight;
+  }
   
   const resizeObserver = new ResizeObserver(() => {
     const res = new Map()
@@ -83,6 +91,7 @@ function TableView(props: TableViewProps) {
           <For each={cols}>{col => <td style={{ 'min-width': colWidths().get(col), "max-width": '1000px' }} />}</For>
         </tr>
         <For each={virtualizer.getVirtualItems().map((el) => el.index)}>{(index) => {
+          if (index >= numRows()) return null;
           return <Row table={props.table} cols={cols} index={index} />;
         }}</For>
         <tr style={{ height: `${remainingSize()}px` }}/>

@@ -35,7 +35,7 @@ export function FilterPanel(props: FilterPanelProps) {
         <Index each={filterList()}>{(filter, i) => 
           <FilterControl columns={columns()} filter={filter()} update={f => setFilter(i, f)} />
         }</Index>
-        <button>Filter</button>
+        <button class={styles.FilterPanel__submit}>Filter</button>
       </form>
     </Show>
   )

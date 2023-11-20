@@ -72,9 +72,24 @@
 }
 
 .FilterControl select:focus,
-.FilterControl input:focus {
+.FilterControl input:focus,
+.FilterPanel__submit:focus {
   outline: none;
   border-color: #007bff;
+}
+
+.FilterPanel__submit {
+  padding: 0.25rem 0.5rem;
+  border: none;
+  border-radius: 0.25rem;
+  background-color: #007bff;
+  transition: filter 300ms ease;
+  cursor: pointer;
+  color: white;
+}
+
+.FilterPanel__submit:hover {
+  filter: brightness(1.2);
 }
 
 .FloatingButton {
