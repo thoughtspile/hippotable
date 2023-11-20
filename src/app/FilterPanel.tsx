@@ -3,6 +3,7 @@ import styles from './FilterPanel.module.css';
 import sortBy from 'just-sort-by';
 import { FaSolidFilter, FaSolidXmark } from 'solid-icons/fa';
 import { type Condition, type Filter, type ColumnDescriptor, conditionSymbol, isFilterComplete } from './filter';
+import { Fab } from './Fab';
 
 interface FilterPanelProps {
   filter: Filter[];
@@ -27,7 +28,7 @@ export function FilterPanel(props: FilterPanelProps) {
   }
   
   return (
-    <Show when={visible()} fallback={<OpenButton open={() => setVisible(true)} />}>
+    <Show when={visible()} fallback={<Fab onClick={() => setVisible(true)} icon={<FaSolidFilter />} />}>
       <form onSubmit={onSubmit} class={styles.FilterPanel}>
         <button type="button" onClick={() => setVisible(false)} class={styles.FilterPanel__close}>
           <FaSolidXmark />
@@ -39,10 +40,6 @@ export function FilterPanel(props: FilterPanelProps) {
       </form>
     </Show>
   )
-}
-
-function OpenButton(props: { open: () => void }) {
-  return <button onClick={props.open} class={styles.FloatingButton}><FaSolidFilter /></button>;
 }
 
 interface FilterControlProps {
