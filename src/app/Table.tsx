@@ -1,4 +1,4 @@
-import { For, createMemo, createSignal, onCleanup, onMount } from 'solid-js';
+import { For, Show, createEffect, createMemo, createSignal, onCleanup, onMount } from 'solid-js';
 import { desc } from 'arquero';
 import './Table.css';
 import type ColumnTable from 'arquero/dist/types/table/column-table';
@@ -6,6 +6,9 @@ import { FaSolidSortDown, FaSolidSortUp } from 'solid-icons/fa';
 import { createVirtualizer } from '@tanstack/solid-virtual';
 import { FilterPanel } from './FilterPanel';
 import { type Filter, toColumnDescriptor, applyFilters } from './filter';
+import { applyAggregation, type Aggregation } from './aggregation';
+import { AggregationPanel } from './AggregationPanel';
+import { FabContainer } from './Fab';
 
 type Order = { col: string; dir: 'asc' | 'desc' };
 
@@ -15,15 +18,14 @@ export function Table(props: { table: ColumnTable }) {
     setOrder(o => ({ col, dir: col === o.col && o.dir === 'asc' ? 'desc' : 'asc' }));
   }
 
+  const [aggregation, setAggregation] = createSignal<Aggregation>({ key: [] });
   const [filter, setFilter] = createSignal<Filter[]>([]);
 
   const view = createMemo(() => {
-    const table = applyFilters(props.table, filter());
+    const table = applyAggregation(applyFilters(props.table, filter()), aggregation());
     const { col, dir } = order();
     return col ? table.orderby(dir === 'desc' ? desc(col) : col) : table;
   });
-
-  const columnDescriptor = createMemo(() => toColumnDescriptor(props.table));
 
   return (
     <>
@@ -31,8 +33,14 @@ export function Table(props: { table: ColumnTable }) {
       <FilterPanel
         filter={filter()}
         update={setFilter}
-        columns={columnDescriptor()}
+        columns={toColumnDescriptor(props.table)}
       />
+      <AggregationPanel
+        aggregation={aggregation()}
+        update={setAggregation}
+        columns={props.table.columnNames()}
+      />
+      <FabContainer />
     </>
   );
 }
@@ -46,11 +54,12 @@ type TableViewProps = {
   orderBy: (c: string) => void;
 }
 function TableView(props: TableViewProps) {
-  const [colWidths, setColWidths] = createSignal(new Map<string, string>());
-  const cols = props.table.columnNames();
+  const [colWidths, setColWidths] = createSignal(new Map<string, number>());
+  const cols = () => props.table.columnNames();
 
   let tableRef: HTMLTableElement;
   const numRows = createMemo(() => props.table.numRows());
+  createEffect(() => console.log(numRows()));
   const virtualizer = createVirtualizer({
     count: numRows(),
     getScrollElement: () => tableRef,
@@ -64,16 +73,18 @@ function TableView(props: TableViewProps) {
     return (total - lastIndex) * rowHeight;
   }
   
-  const resizeObserver = new ResizeObserver(() => {
-    const res = new Map()
-    const headers = tableRef.querySelectorAll('th');
-    tableRef.querySelectorAll('tr:nth-child(2) td').forEach((td, i) => {
-      res.set(cols[i], `${Math.ceil(Math.min(Math.max(td.clientWidth, headers[i].clientWidth), 1000))}px`);
+  const resizeObserver = new ResizeObserver((entries) => {
+    setColWidths(res => {
+      const next = new Map(res.entries());
+      for (const e of entries) {
+        const { col } = (e.target as HTMLElement).dataset;
+        next.set(col, Math.min(Math.max(next.get(col) ?? 0, Math.ceil(e.contentRect.width) + 12), 1000));
+      }
+      return next;
     });
-    setColWidths(res);
   });
   onMount(() => {
-    for (const td of tableRef.querySelectorAll('tr:first-child td')) {
+    for (const td of tableRef.querySelectorAll('tr:first-child td, th')) {
       resizeObserver.observe(td);
     }
   });
@@ -82,18 +93,17 @@ function TableView(props: TableViewProps) {
   return (
     <table ref={tableRef}>
       <thead>
-        <For each={cols}>{col => 
+        <For each={cols()}>{col => 
           <HeaderCell orderBy={props.orderBy} order={props.order} width={colWidths().get(col)} name={col} />
         }</For>
       </thead>
       <tbody>
         <tr style={{ height: `${virtualizer.getVirtualItems()[0].start}px` }}>
-          <For each={cols}>{col => <td style={{ 'min-width': colWidths().get(col), "max-width": '1000px' }} />}</For>
+          <For each={cols()}>{col => <td data-col={col} style={{ 'min-width': `${colWidths().get(col)}px` }} />}</For>
         </tr>
-        <For each={virtualizer.getVirtualItems().map((el) => el.index)}>{(index) => {
-          if (index >= numRows()) return null;
-          return <Row table={props.table} cols={cols} index={index} />;
-        }}</For>
+        <For each={virtualizer.getVirtualItems().map((el) => el.index)}>{(index) => (
+          <Show when={index < numRows()}><Row table={props.table} cols={cols()} index={index} /></Show>
+        )}</For>
         <tr style={{ height: `${remainingSize()}px` }}/>
       </tbody>
     </table>
@@ -113,10 +123,10 @@ function Row(props: RowProps) {
   );
 }
 
-function HeaderCell(props: { order: Order, name: string; orderBy: (c: string) => void; width: string }) {
+function HeaderCell(props: { order: Order, name: string; orderBy: (c: string) => void; width: number }) {
   const dir = () => props.order.col === props.name ? props.order.dir : null;
   return (
-    <th onClick={() => props.orderBy(props.name)} style={{ width: props.width }}>
+    <th data-col={props.name} onClick={() => props.orderBy(props.name)} style={{ 'min-width': `${props.width}px` }}>
       {props.name}
       {dir() === 'desc' && <FaSolidSortUp />}
       {dir() === 'asc' && <FaSolidSortDown />}

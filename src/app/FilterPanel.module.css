@@ -1,93 +1,13 @@
-.FilterPanel {
-  position: fixed;
-  padding: 1rem;
-  top: 0;
-  right: 0;
-  height: 100vh;
-  width: 320px;
-  max-width: 100%;
-  background-color: #f4f4f4;
-  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
-}
-
-.FilterPanel__close {
-  position: absolute;
-  top: 0.5rem;
-  left: -2.5rem;
-  background-color: rgba(0, 0, 0, 0.6);
-  transition: opacity 300ms ease;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 2rem;
-  height: 2rem;
-  cursor: pointer;
-  display: flex;
-  font-size: 1rem;
-  align-items: center;
-  justify-content: center;
-  opacity: 0.6;
-}
-
-.FilterPanel__close:hover {
-  opacity: 1;
-}
-
 .FilterControl {
   width: 100%;
-  display: flex;
-  flex-direction: row;
   margin-bottom: 0.25rem;
 }
 
-.FilterControl {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  margin-bottom: 0.5rem;
-}
-
-.FilterControl *:not(:first-child) {
-  margin-left: -1px;
-}
-.FilterControl *:first-child {
-  border-radius: 0.25rem 0 0 0.25rem;
-}
-.FilterControl *:last-child {
-  border-radius: 0 0.25rem 0.25rem 0;
-}
-.FilterControl *:not(:nth-child(2)) {
-  flex-grow: 1;
-  flex-shrink: 1;
+.FilterControl * {
+  flex: 1 1 0;
   min-width: 0;
 }
+
 .FilterControl *:nth-child(2) {
-  flex: 0 0 2.5rem;
-}
-
-.FilterControl select,
-.FilterControl input {
-  padding: 0 0.25rem;
-  border: 1px solid #ccc;
-}
-
-.FilterControl select:focus,
-.FilterControl input:focus,
-.FilterPanel__submit:focus {
-  outline: none;
-  border-color: #007bff;
-}
-
-.FilterPanel__submit {
-  padding: 0.25rem 0.5rem;
-  border: none;
-  border-radius: 0.25rem;
-  background-color: #007bff;
-  transition: filter 300ms ease;
-  cursor: pointer;
-  color: white;
-}
-
-.FilterPanel__submit:hover {
-  filter: brightness(1.2);
+  flex: 0 0 2.5rem
 }

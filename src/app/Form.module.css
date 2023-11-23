@@ -1,0 +1,54 @@
+.FormControl {
+  border-radius: 0.25rem;
+}
+
+.SegmentedControl {
+  display: flex;
+  flex-direction: row;
+}
+
+.SegmentedControl .FormControl {
+  min-width: 0;
+  flex: 1;
+}
+
+.SegmentedControl .FormControl:not(:first-child) {
+  margin-left: -1px;
+}
+.SegmentedControl .FormControl:focus {
+  z-index: 1;
+}
+
+.SegmentedControl .FormControl:not(:first-child) {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.SegmentedControl .FormControl:not(:last-child) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.FormControl {
+  padding: 0 0.25rem;
+  border: 1px solid #ccc;
+}
+
+.FormControl:focus,
+.FormButton:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.FormButton {
+  padding: 0.25rem 0.5rem;
+  border: none;
+  border-radius: 0.25rem;
+  background-color: #007bff;
+  transition: filter 300ms ease;
+  cursor: pointer;
+  color: white;
+}
+
+.FormButton:hover {
+  filter: brightness(1.2);
+}

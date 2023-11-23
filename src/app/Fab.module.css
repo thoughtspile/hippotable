@@ -1,7 +1,4 @@
 .Fab {
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
   background-color: #007bff;
   transition: filter 300ms ease;
   color: white;
@@ -19,4 +16,13 @@
 
 .Fab:hover {
   filter: brightness(1.2);
+}
+
+.FabContainer {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }

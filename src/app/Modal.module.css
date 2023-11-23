@@ -1,0 +1,34 @@
+.Modal {
+  position: fixed;
+  padding: 1rem;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 320px;
+  max-width: 100%;
+  background-color: #f4f4f4;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.Modal__close {
+  position: absolute;
+  top: 0.5rem;
+  left: -2.5rem;
+  background-color: rgba(0, 0, 0, 0.6);
+  transition: opacity 300ms ease;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  cursor: pointer;
+  display: flex;
+  font-size: 1rem;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
+}
+
+.FilterPanel__close:hover {
+  opacity: 1;
+}
