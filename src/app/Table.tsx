@@ -4,11 +4,10 @@ import './Table.css';
 import type ColumnTable from 'arquero/dist/types/table/column-table';
 import { FaSolidSortDown, FaSolidSortUp } from 'solid-icons/fa';
 import { createVirtualizer } from '@tanstack/solid-virtual';
-import { FilterPanel } from './FilterPanel';
-import { type Filter, toColumnDescriptor, applyFilters } from './filter';
-import { applyAggregation, type Aggregation } from './aggregation';
-import { AggregationPanel } from './AggregationPanel';
-import { FabContainer } from './Fab';
+import { type Filter, toColumnDescriptor, applyFilters } from '../data/filter';
+import { applyAggregation, type Aggregation } from '../data/aggregation';
+import { AnalysisPanel } from './Analysis';
+import { FabContainer } from './ui/Fab';
 
 type Order = { col: string; dir: 'asc' | 'desc' };
 
@@ -30,15 +29,9 @@ export function Table(props: { table: ColumnTable }) {
   return (
     <>
       <TableView table={view()} orderBy={orderBy} order={order()} />
-      <FilterPanel
-        filter={filter()}
-        update={setFilter}
-        columns={toColumnDescriptor(props.table)}
-      />
-      <AggregationPanel
-        aggregation={aggregation()}
-        update={setAggregation}
-        columns={props.table.columnNames()}
+      <AnalysisPanel
+        filter={{ filter: filter(), update: setFilter, columns: toColumnDescriptor(props.table) }}
+        aggregation={{ aggregation: aggregation(), update: setAggregation,columns: props.table.columnNames() }}
       />
       <FabContainer />
     </>

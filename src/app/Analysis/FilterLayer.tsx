@@ -1,21 +1,17 @@
-import { For, Index, Show, createMemo, createSignal } from 'solid-js';
-import styles from './FilterPanel.module.css';
+import { For, Index, createMemo, createSignal } from 'solid-js';
+import styles from './FilterLayer.module.css';
 import sortBy from 'just-sort-by';
-import { FaSolidFilter } from 'solid-icons/fa';
-import { type Condition, type Filter, type ColumnDescriptor, conditionSymbol, isFilterComplete } from './filter';
-import { Fab } from './Fab';
-import { Modal } from './Modal';
-import { FormButton, Input, SegmentedControl, Select } from './Form';
+import { type Condition, type Filter, type ColumnDescriptor, conditionSymbol, isFilterComplete } from '../../data/filter';
+import { FormButton, Input, SegmentedControl, Select } from '../ui/Form';
 
-interface FilterPanelProps {
+export interface FilterLayerProps {
   filter: Filter[];
   columns: ColumnDescriptor[];
   update: (f: Filter[]) => void;
 }
 
-export function FilterPanel(props: FilterPanelProps) {
+export function FilterLayer(props: FilterLayerProps) {
   const columns = createMemo(() => sortBy(props.columns, c => c.name));
-  const [visible, setVisible] = createSignal(false);
   const [staging, setStaging] = createSignal<Partial<Filter>[]>(props.filter);
   function filterList() {
     const items = staging();
@@ -30,16 +26,12 @@ export function FilterPanel(props: FilterPanelProps) {
   }
   
   return (
-    <Show when={visible()} fallback={<Fab onClick={() => setVisible(true)} icon={<FaSolidFilter />} />}>
-      <Modal close={() => setVisible(false)}>
-        <form onSubmit={onSubmit}>
-          <Index each={filterList()}>{(filter, i) => 
-            <FilterControl columns={columns()} filter={filter()} update={f => setFilter(i, f)} />
-          }</Index>
-          <FormButton>Filter</FormButton>
-        </form>
-      </Modal>
-    </Show>
+    <form onSubmit={onSubmit}>
+      <Index each={filterList()}>{(filter, i) => 
+        <FilterControl columns={columns()} filter={filter()} update={f => setFilter(i, f)} />
+      }</Index>
+      <FormButton>Filter</FormButton>
+    </form>
   )
 }
 
