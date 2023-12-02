@@ -1,18 +1,18 @@
-import { For, Index, createMemo, createSignal } from 'solid-js';
+import { Index, createEffect, createMemo, createSignal } from 'solid-js';
 import styles from './FilterLayer.module.css';
 import sortBy from 'just-sort-by';
-import { type Condition, type Filter, type ColumnDescriptor, conditionSymbol, isFilterComplete } from '../../data/filter';
+import { type Condition, type Filter, type ColumnDescriptor, conditionSymbol, isFilterComplete, toColumnDescriptor } from '../../data/filter';
 import { FormButton, Input, SegmentedControl, Select } from '../ui/Form';
+import type ColumnTable from 'arquero/dist/types/table/column-table';
 
 export interface FilterLayerProps {
-  filter: Filter[];
-  columns: ColumnDescriptor[];
+  filter: { filters: Filter[]; input: ColumnTable };
   update: (f: Filter[]) => void;
 }
 
 export function FilterLayer(props: FilterLayerProps) {
-  const columns = createMemo(() => sortBy(props.columns, c => c.name));
-  const [staging, setStaging] = createSignal<Partial<Filter>[]>(props.filter);
+  const columns = createMemo(() => sortBy(toColumnDescriptor(props.filter.input), c => c.name));
+  const [staging, setStaging] = createSignal<Partial<Filter>[]>(props.filter.filters);
   function filterList() {
     const items = staging();
     return !items.length || items.every(isFilterComplete) ? [...items, {}] : items;
@@ -47,20 +47,14 @@ function FilterControl(props: FilterControlProps) {
       <Select 
         value={props.filter.name}
         onChange={e => props.update({ ...props.filter, name: e.target.value })}
-      >
-        <For each={props.columns}>{col => 
-          <option value={col.name}>{col.name}</option>
-        }</For>
-      </Select>
+        options={props.columns.map(col => ({ label: col.name, value: col.name }))}
+      />
       <Select 
         disabled={!activeColumn()} 
         value={props.filter.condition}
+        options={activeColumn()?.availableConditions?.map(c => ({ value: c, label: conditionSymbol[c] }))}
         onChange={e => props.update({ ...props.filter, condition: e.target.value as Condition })}
-      >
-        <For each={activeColumn()?.availableConditions}>{cond => 
-          <option value={cond}>{conditionSymbol[cond]}</option>
-        }</For>
-      </Select>
+      />
       <Input 
         disabled={!activeColumn()}
         value={props.filter.value == null ? '' : String(props.filter.value)}

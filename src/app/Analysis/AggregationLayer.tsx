@@ -3,15 +3,15 @@ import styles from './AggregationLayer.module.css';
 import sortBy from 'just-sort-by';
 import type { Aggregation } from '../../data/aggregation';
 import { FormButton, SegmentedControl, Select } from '../ui/Form';
+import type ColumnTable from 'arquero/dist/types/table/column-table';
 
 export interface AggregationLayerProps {
-  aggregation: Aggregation;
+  aggregation: Aggregation & { input: ColumnTable };
   update: (a: Aggregation) => void;
-  columns: string[];
 }
 
 export function AggregationLayer(props: AggregationLayerProps) {
-  const columns = createMemo(() => sortBy(props.columns));
+  const columns = createMemo(() => sortBy(props.aggregation.input.columnNames()));
   const [staging, setStaging] = createSignal<Aggregation>(props.aggregation);
   function onSubmit(e: Event) {
     e.preventDefault();
@@ -28,9 +28,8 @@ export function AggregationLayer(props: AggregationLayerProps) {
           <Select 
             value={value()}
             onChange={e => setValue(value(), e.target.value)}
-          >
-            <For each={columns()}>{col => <option value={col}>{col}</option>}</For>
-          </Select>
+            options={columns().map(c => ({ label: c, value: c }))}
+          />
         )}</Index>
       </SegmentedControl>
       <FormButton>Aggregate</FormButton>

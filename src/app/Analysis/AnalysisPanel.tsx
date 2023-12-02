@@ -1,63 +1,59 @@
-import { For, Show, createMemo, createSignal } from 'solid-js';
+import { For, Index, Show, createSignal } from 'solid-js';
 import { FaSolidMagnifyingGlass, FaSolidPlus } from 'solid-icons/fa';
 import { Fab } from '../ui/Fab';
 import { Modal } from '../ui/Modal';
 import { FilterLayer } from './FilterLayer';
 import { AggregationLayer } from './AggregationLayer';
-import type { Flow, FlowStep } from '../../data/flow';
-import type ColumnTable from 'arquero/dist/types/table/column-table';
-import { toColumnDescriptor } from '../../data/filter';
+import type { FlowStep, FlowStepComputed } from '../../data/pipeline';
 import { FormButton, SegmentedControl } from '../ui/Form';
 import styles from './AnalysisPanel.module.css';
+import type { Pipeline } from '../../data/pipeline';
 
 interface AnalysisPanelProps {
-  flow: Flow;
-  update: (f: Flow) => void;
-  table: ColumnTable;
+  pipeline: Pipeline;
+  update: (f: Pipeline) => void;
 }
 
 export function AnalysisPanel(props: AnalysisPanelProps) {
   const [visible, setVisible] = createSignal(false);
-  const columnNames = createMemo(() => props.table.columnNames());
-  const columnDescriptor = createMemo(() => toColumnDescriptor(props.table));
   function updateStep(id: number, nextStep: FlowStep) {
-    props.update(props.flow.map((s, i) => i === id ? nextStep : s));
+    props.update(props.pipeline.changeStep(id, nextStep));
   }
-  function insertLayerBefore(mode: FlowStep['mode'], id: number | null) {
-    const nextFlow = [...props.flow];
-    if (mode === 'order') return;
-    const step: FlowStep = mode === 'aggregate' ? { mode, key: [] } : { mode, filters: [] };
-    nextFlow.splice(id ?? nextFlow.length, 0, step);
-    props.update(nextFlow);
+  function insertLayerBefore(mode: FlowStep['mode']) {
+    props.update(props.pipeline.addStep(mode));
   }
   
   return (
     <Show when={visible()} fallback={<Fab onClick={() => setVisible(true)} icon={<FaSolidMagnifyingGlass />} />}>
       <Modal close={() => setVisible(false)}>
         <div class={styles.Form}>
-          <For each={props.flow}>{(s, i) =>
-            <>
-              {s.mode === 'aggregate' && (
-                <AggregationLayer 
-                  aggregation={s} 
-                  update={a => updateStep(i(), { mode: 'aggregate', ...a })}
-                  columns={columnNames()}
-                />
-              )}
-              {s.mode === 'filter' && (
-                <FilterLayer 
-                  filter={s.filters} 
-                  update={filters => updateStep(i(), { mode: 'filter', filters })}
-                  columns={columnDescriptor()}
-                />
-              )}
-            </>
-          }</For>
-          <AddLayer open={!props.flow.length} insert={s => insertLayerBefore(s, null)} />
+          <Index each={props.pipeline.flow}>{(s, i) =>
+            <Layer step={s()} update={s => updateStep(i, s)} />
+          }</Index>
+          <AddLayer open={!props.pipeline.flow.length} insert={s => insertLayerBefore(s)} />
         </div>
       </Modal>
     </Show>
   )
+}
+
+function Layer(props: { step: FlowStepComputed, update: (s: FlowStep) => void }) {
+  return (
+    <>
+      {props.step.mode === 'aggregate' && (
+        <AggregationLayer 
+          aggregation={props.step}
+          update={a => props.update({ mode: 'aggregate', ...a })}
+        />
+      )}
+      {props.step.mode === 'filter' && (
+        <FilterLayer 
+          filter={props.step}
+          update={filters => props.update({ mode: 'filter', filters })}
+        />
+      )}
+    </>
+  );
 }
 
 function AddLayer(props: { open?: boolean; insert: (mode: FlowStep['mode']) => void }) {

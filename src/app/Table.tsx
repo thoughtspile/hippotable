@@ -5,22 +5,21 @@ import { FaSolidSortDown, FaSolidSortUp } from 'solid-icons/fa';
 import { createVirtualizer } from '@tanstack/solid-virtual';
 import { AnalysisPanel } from './Analysis';
 import { FabContainer } from './ui/Fab';
-import { applyFlow, type Flow } from '../data/flow';
 import type { Order } from '../data/order';
+import { createPipeline } from '../data/pipeline';
 
 export function Table(props: { table: ColumnTable }) {
-  const [flow, setFlow] = createSignal<Flow>([]);
-  const [order, setOrder] = createSignal<Order>({ col: null, dir: 'asc' });
-  function orderBy(col: string) {
-    setOrder(o => ({ col, dir: col === o.col && o.dir === 'asc' ? 'desc' : 'asc' }));
-  }
-
-  const view = createMemo(() => applyFlow(props.table, [...flow(), { mode: 'order', ...order() }]));
+  const [pipeline, setPipeline] = createSignal(createPipeline(props.table));
+  const order = createMemo(() => pipeline().order);
 
   return (
     <>
-      <TableView table={view()} orderBy={orderBy} order={order()} />
-      <AnalysisPanel flow={flow()} update={setFlow} table={props.table} />
+      <TableView 
+        table={pipeline().output} 
+        orderBy={col => setPipeline(pipeline().orderBy(col))} 
+        order={pipeline().order}
+      />
+      <AnalysisPanel pipeline={pipeline()} update={setPipeline} />
       <FabContainer />
     </>
   );
@@ -40,7 +39,6 @@ function TableView(props: TableViewProps) {
 
   let tableRef: HTMLTableElement;
   const numRows = createMemo(() => props.table.numRows());
-  createEffect(() => console.log(numRows()));
   const virtualizer = createVirtualizer({
     count: numRows(),
     getScrollElement: () => tableRef,

@@ -1,11 +1,15 @@
+import { For, createEffect } from 'solid-js';
 import styles from './Form.module.css';
 import type { JSX } from "solid-js/jsx-runtime";
 
-export function Select(props: JSX.SelectHTMLAttributes<HTMLSelectElement>) {
+type SelectOption = { label: string; value: string };
+export function Select(props: JSX.SelectHTMLAttributes<HTMLSelectElement> & { options: SelectOption[] }) {
   return (
-    <select {...props} value={props.value || ''} class={`${styles.FormControl} ${props.class || ''}`}>
+    <select {...props} class={`${styles.FormControl} ${props.class || ''}`}>
       <option value=""></option>
-      {props.children}
+      <For each={props.options}>{op =>
+        <option value={op.value} selected={op.value === props.value}>{op.label}</option>
+      }</For>
     </select>
   );
 }
