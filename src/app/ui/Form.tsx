@@ -2,7 +2,12 @@ import styles from './Form.module.css';
 import type { JSX } from "solid-js/jsx-runtime";
 
 export function Select(props: JSX.SelectHTMLAttributes<HTMLSelectElement>) {
-  return <select {...props} class={`${styles.FormControl} ${props.class || ''}`} />;
+  return (
+    <select {...props} value={props.value || ''} class={`${styles.FormControl} ${props.class || ''}`}>
+      <option value=""></option>
+      {props.children}
+    </select>
+  );
 }
 
 export function Input(props: JSX.InputHTMLAttributes<HTMLInputElement>) {

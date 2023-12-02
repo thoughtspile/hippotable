@@ -1,38 +1,26 @@
 import { For, Show, createEffect, createMemo, createSignal, onCleanup, onMount } from 'solid-js';
-import { desc } from 'arquero';
 import './Table.css';
 import type ColumnTable from 'arquero/dist/types/table/column-table';
 import { FaSolidSortDown, FaSolidSortUp } from 'solid-icons/fa';
 import { createVirtualizer } from '@tanstack/solid-virtual';
-import { type Filter, toColumnDescriptor, applyFilters } from '../data/filter';
-import { applyAggregation, type Aggregation } from '../data/aggregation';
 import { AnalysisPanel } from './Analysis';
 import { FabContainer } from './ui/Fab';
-
-type Order = { col: string; dir: 'asc' | 'desc' };
+import { applyFlow, type Flow } from '../data/flow';
+import type { Order } from '../data/order';
 
 export function Table(props: { table: ColumnTable }) {
+  const [flow, setFlow] = createSignal<Flow>([]);
   const [order, setOrder] = createSignal<Order>({ col: null, dir: 'asc' });
   function orderBy(col: string) {
     setOrder(o => ({ col, dir: col === o.col && o.dir === 'asc' ? 'desc' : 'asc' }));
   }
 
-  const [aggregation, setAggregation] = createSignal<Aggregation>({ key: [] });
-  const [filter, setFilter] = createSignal<Filter[]>([]);
-
-  const view = createMemo(() => {
-    const table = applyAggregation(applyFilters(props.table, filter()), aggregation());
-    const { col, dir } = order();
-    return col ? table.orderby(dir === 'desc' ? desc(col) : col) : table;
-  });
+  const view = createMemo(() => applyFlow(props.table, [...flow(), { mode: 'order', ...order() }]));
 
   return (
     <>
       <TableView table={view()} orderBy={orderBy} order={order()} />
-      <AnalysisPanel
-        filter={{ filter: filter(), update: setFilter, columns: toColumnDescriptor(props.table) }}
-        aggregation={{ aggregation: aggregation(), update: setAggregation,columns: props.table.columnNames() }}
-      />
+      <AnalysisPanel flow={flow()} update={setFlow} table={props.table} />
       <FabContainer />
     </>
   );
