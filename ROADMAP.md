@@ -1,0 +1,44 @@
+- Landing
+- Import
+  - redesign welcome import
+  - restart
+  - JSON import
+  - append
+  - streaming processing
+- table
+  - fix: column size on aggregation
+  - datetime format
+- Analysis
+  - global apply button
+  - Filters
+    - remove filter
+    - empty string value
+    - datetime
+    - column pivot
+    - or conditions
+    - value suggest
+  - Aggregation
+    - deduplicate
+    - un-aggregate
+    - custom aggregation
+    - add label
+  - Projection
+    - Column selection
+    - Column reordering
+    - Computed columns
+  - Add step before
+  - Remove step
+  - Toggle step
+  - Join
+    - tabs / toggle view
+    - named steps
+    - multiple import
+- export
+  - download csv
+  - save pipeline
+- text search
+- charts
+  - scatter / line / bar
+  - heatmap
+  - export to image
+- share
