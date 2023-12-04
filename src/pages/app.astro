@@ -1,26 +1,10 @@
 ---
+import Layout from '../layout.astro';
 import { Dashboard } from '../app/Dashboard.tsx';
-import 'spectre.css/dist/spectre.min.css';
 import { Devtools } from '../app/Devtools';
 ---
 
-<html>
-  <head>
-    <title>Hello, hippo!</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  </head>
-  <body>
-    <Dashboard client:load />
-    <Devtools client:only />
-  </body>
-</html>
-
-<style is:global>
-  input[type=file] {
-    display: none;
-  }
-
-  :root {
-    font-size: 16px;
-  }
-</style>
+<Layout>
+  <Dashboard client:load />
+  <Devtools client:only />
+</Layout>

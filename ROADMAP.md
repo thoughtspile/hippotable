@@ -1,6 +1,8 @@
 - Landing
+- bugs
+  - listen to history (support back from table)
+  - persist blob on reload
 - Import
-  - redesign welcome import
   - restart
   - JSON import
   - append
