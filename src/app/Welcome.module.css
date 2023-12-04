@@ -19,39 +19,4 @@
   .Welcome {
     flex-direction: column;
   }
-
-  .Welcome.Button {
-    width: 320px;
-  }
-}
-
-.Button {
-  border: none;
-  outline: none;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 1.25rem;
-  letter-spacing: 0.02em;
-  user-select: none;
-  font-weight: bold;
-  padding: 0.75rem 1.5rem;
-  white-space: nowrap;
-  line-height: 1;
-  border-radius: 3rem;
-  text-align: center;
-  transition: all 0.3s ease-in-out;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.Button.primary {
-  background-color: #66B3FF;
-  color: #fff;
-}
-
-.Button:hover {
-  background-color: #FFB366;
-  color: #fff;
 }

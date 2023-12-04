@@ -28,6 +28,7 @@
     "arquero": "^5.2.0",
     "astro": "^3.2.3",
     "just-sort-by": "^3.2.0",
+    "nanoid": "^5.0.4",
     "solid-icons": "^1.0.12",
     "solid-js": "^1.7.12"
   },
