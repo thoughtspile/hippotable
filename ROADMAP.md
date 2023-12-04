@@ -1,7 +1,5 @@
-- Landing
-- bugs
-  - listen to history (support back from table)
-  - persist blob on reload
+- star on github
+- readme
 - Import
   - restart
   - JSON import
@@ -12,6 +10,7 @@
   - datetime format
 - Analysis
   - global apply button
+  - clear order on aggregation
   - Filters
     - remove filter
     - empty string value
@@ -20,6 +19,7 @@
     - or conditions
     - value suggest
   - Aggregation
+    - fields with spaces
     - deduplicate
     - un-aggregate
     - custom aggregation
