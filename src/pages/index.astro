@@ -1,4 +1,5 @@
 ---
+import { Uploader } from '../app/Uploader';
 import Layout from '../layout.astro';
 ---
 
@@ -16,6 +17,7 @@ import Layout from '../layout.astro';
       </svg>
       A better way to analyze data
     </h1>
+    <div class="actions"><Uploader client:load /></div>
     <div class="CardContainer">
       <div class="Card">
         <h2 class="CardTitle" style="color: #01386a">Fast</h2>
@@ -42,6 +44,12 @@ import Layout from '../layout.astro';
 <style>
   :global(html) {
     background: linear-gradient(to right, #FFA566, #FF1E66);
+  }
+
+  .actions {
+    display: flex;
+    gap: 1rem;
+    margin: 0 -2rem;
   }
 
 .Landing {
@@ -106,4 +114,10 @@ import Layout from '../layout.astro';
     box-sizing: border-box;
     margin: 0;
   }
+
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
 </style>

@@ -16,3 +16,25 @@ export async function writeFile(file: File) {
   await writer.close();
   return name;
 }
+
+function goToTable(src: string) {
+  const selfUrl = new URL('/hippostats/app', location.href);
+  selfUrl.searchParams.set('source', src);
+  location.assign(selfUrl);
+}
+
+export async function persistSource(file: File | string) {
+  if (typeof file === 'string') return goToTable(file);
+  const name = await writeFile(file);
+  goToTable(`fs:${name}`);
+}
+
+export async function accessSource(): Promise<string | null> {
+  const source = new URLSearchParams(location.search).get('source');
+  if (source?.startsWith('fs:')) {
+    return(await readFile(source.replace('fs:', '')))
+  } else if (source) {
+    return(source);
+  }
+  return null
+}
