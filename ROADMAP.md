@@ -10,7 +10,6 @@
   - datetime format
 - Analysis
   - global apply button
-  - clear order on aggregation
   - Filters
     - remove filter
     - datetime
@@ -24,6 +23,7 @@
     - add label
   - Ordering
     - show in step flow
+    - lexicographic multi-column order
   - Projection
     - Column selection
     - Column reordering

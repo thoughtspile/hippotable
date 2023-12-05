@@ -22,10 +22,11 @@ export interface Pipeline {
   flow: FlowComputed;
 }
 
+const emptyOrder = () => ({ col: null, dir: 'asc' } as const);
 export function createPipeline(
   table: ColumnTable, 
   flow: Flow = [], 
-  order: Order = { col: null, dir: 'asc' }
+  order: Order = emptyOrder()
 ): Pipeline {
   const cache = computeFlow(table, [...flow, { mode: 'order', ...order }]);
   const pipeline: Pipeline = {
