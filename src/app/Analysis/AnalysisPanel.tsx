@@ -1,5 +1,5 @@
-import { For, Index, Show, createEffect, createSignal } from 'solid-js';
-import { FaSolidMagnifyingGlass, FaSolidPlus, FaSolidXmark } from 'solid-icons/fa';
+import { Index, Show, createSignal } from 'solid-js';
+import { FaSolidMagnifyingGlass, FaSolidXmark } from 'solid-icons/fa';
 import { Fab } from '../ui/Fab';
 import { Modal } from '../ui/Modal';
 import { FilterLayer } from './FilterLayer';
@@ -8,6 +8,7 @@ import { flowActions, type Flow, type FlowStep, type FlowStepComputed } from '..
 import { FormButton, SegmentedControl } from '../ui/Form';
 import styles from './AnalysisPanel.module.css';
 import type { Pipeline } from '../../data/pipeline';
+import { ComputeLayer } from './ComputeLayer';
 
 interface AnalysisPanelProps {
   pipeline: Pipeline;
@@ -57,6 +58,12 @@ function Layer(props: { step: FlowStepComputed, update: (s: FlowStep) => void; r
           update={filters => props.update({ mode: 'filter', filters })}
         />
       )}
+      {props.step.mode === 'compute' && (
+        <ComputeLayer
+          compute={props.step}
+          update={value => props.update({ mode: 'compute', ...value })}
+        />
+      )}
       {<button class={styles.RemoveLayer} onClick={props.remove}><FaSolidXmark /></button>}
     </div>
   );
@@ -68,6 +75,7 @@ function AddLayer(props: { insert: (mode: FlowStep['mode']) => void; exclude: Fl
       <SegmentedControl class={styles.AddActions}>
         {props.exclude !== 'aggregate' && <FormButton onClick={() => props.insert('aggregate')}>Aggregation</FormButton>}
         {props.exclude !== 'filter' && <FormButton onClick={() => props.insert('filter')}>Filter</FormButton>}
+        {props.exclude !== 'compute' && <FormButton onClick={() => props.insert('compute')}>Computed</FormButton>}
       </SegmentedControl>
     </div>
   );

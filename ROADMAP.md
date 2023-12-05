@@ -25,7 +25,6 @@
   - Projection
     - Column selection
     - Column reordering
-    - Computed columns
   - Add step before
   - Toggle step
   - Join

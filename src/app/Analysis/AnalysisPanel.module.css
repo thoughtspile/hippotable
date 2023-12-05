@@ -4,6 +4,11 @@
   gap: 1rem;
 }
 
+.Form input,
+.Form select {
+  font-family: monospace;
+}
+
 .Splitter {
   display: flex;
   align-items: center;
