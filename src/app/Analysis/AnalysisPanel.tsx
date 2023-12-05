@@ -35,7 +35,7 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
               remove={() => setStaging(flowActions.removeStep(staging(), i))}
             />
           }</Index>
-          <AddLayer open={!staging().length} insert={addStep} />
+          <AddLayer exclude={staging().at(-1)?.mode === 'filter' ? 'filter' : null} insert={addStep} />
         </div>
       </Modal>
     </Show>
@@ -62,20 +62,13 @@ function Layer(props: { step: FlowStepComputed, update: (s: FlowStep) => void; r
   );
 }
 
-function AddLayer(props: { open?: boolean; insert: (mode: FlowStep['mode']) => void }) {
-  const [isOpen, setOpen] = createSignal(props.open ?? false);
-  function selectType(mode: FlowStep['mode']) {
-    props.insert(mode);
-    setOpen(false);
-  }
+function AddLayer(props: { insert: (mode: FlowStep['mode']) => void; exclude: FlowStep['mode'] | null }) {
   return (
     <div class={styles.Splitter}>
-      <Show when={isOpen()} fallback={<button class={styles.AddLayerButton} onClick={() => setOpen(true)}><FaSolidPlus /></button>}>
-        <SegmentedControl>
-          <FormButton onClick={() => selectType('aggregate')}>Aggregation</FormButton>
-          <FormButton onClick={() => selectType('filter')}>Filter</FormButton>
-        </SegmentedControl>
-      </Show>
+      <SegmentedControl class={styles.AddActions}>
+        {props.exclude !== 'aggregate' && <FormButton onClick={() => props.insert('aggregate')}>Aggregation</FormButton>}
+        {props.exclude !== 'filter' && <FormButton onClick={() => props.insert('filter')}>Filter</FormButton>}
+      </SegmentedControl>
     </div>
   );
 }

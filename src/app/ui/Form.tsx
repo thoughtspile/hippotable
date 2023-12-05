@@ -23,5 +23,5 @@ export function SegmentedControl(props: JSX.HTMLAttributes<HTMLDivElement>) {
 }
 
 export function FormButton(props: JSX.ButtonHTMLAttributes<HTMLButtonElement>) {
-  return <button {...props} class={`${styles.FormButton} ${props.class}`} />;
+  return <button {...props} class={`${styles.FormControl} ${styles.FormButton} ${props.class}`} />;
 }

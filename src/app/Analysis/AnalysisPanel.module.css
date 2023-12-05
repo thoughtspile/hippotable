@@ -5,29 +5,17 @@
 }
 
 .Splitter {
-  margin: 1rem 0;
-  height: 0;
-  overflow: visible;
-  border-top: 1px solid #777;
-  color: #333;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.Splitter:last-child {
-  border-color: transparent;
+.AddActions {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
 }
 
-.AddLayerButton {
-  width: 1.75rem;
-  height: 1.75rem;
-  border: none;
-  background: white;
-  border-radius: 999px;
-}
-
-.AddLayerButton:hover,
 .RemoveLayer:hover {
   color: red;
 }

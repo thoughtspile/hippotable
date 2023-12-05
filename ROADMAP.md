@@ -9,7 +9,6 @@
   - fix: column size on aggregation
   - datetime format
 - Analysis
-  - global apply button
   - Filters
     - remove filter
     - datetime
