@@ -17,18 +17,36 @@ export function AggregationLayer(props: AggregationLayerProps) {
     e.preventDefault();
     props.update(staging());
   }
-  function setValue(old: string | null, next: string) {
-    setStaging(s => ({ key: old ? s.key.map(e => e === old ? next : e) : s.key.concat(next) }));
+  function setValue(oldValue: string | null, nextValue: string) {
+    const { key } = staging();
+    if (oldValue == null) {
+      setStaging({ key: [...key, nextValue] });
+    } else {
+      const nextKey = key
+        .filter(e => e !== nextValue)
+        .map(e => e === oldValue ? nextValue : e);
+      setStaging(({ key: nextKey }));
+    }
+  }
+  function keyLevels() {
+    let options = columns().map(c => ({ label: c, value: c }));
+    const result: ({ value: string; options: typeof options })[] = [];
+    for (const level of staging().key) {
+      result.push({ value: level, options });
+      options = options.filter(o => o.value !== level);
+    }
+    result.push({ value: null, options });
+    return result;
   }
   
   return (
     <form onSubmit={onSubmit} class={styles.AggregationLayer}>
       <SegmentedControl>
-        <Index each={staging().key.concat(null)}>{(value) => (
+        <Index each={keyLevels()}>{(level) => (
           <Select 
-            value={value()}
-            onChange={e => setValue(value(), e.target.value)}
-            options={columns().map(c => ({ label: c, value: c }))}
+            value={level().value}
+            onChange={e => setValue(level().value, e.target.value)}
+            options={level().options}
           />
         )}</Index>
       </SegmentedControl>

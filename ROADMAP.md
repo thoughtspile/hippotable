@@ -17,7 +17,6 @@
     - or conditions
     - value suggest
   - Aggregation
-    - deduplicate
     - un-aggregate
     - custom aggregation
     - add label
