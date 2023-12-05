@@ -19,7 +19,6 @@
     - or conditions
     - value suggest
   - Aggregation
-    - fields with spaces
     - deduplicate
     - un-aggregate
     - custom aggregation

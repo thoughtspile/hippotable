@@ -55,7 +55,7 @@ export function toColumnDescriptor(table: ColumnTable) {
 
 export function applyFilters(table: ColumnTable, options: { filters: Filter[] }) {
   for (const f of options.filters) {
-    table = table.filter(`d.${f.name} ${conditionSymbol[f.condition]} ${JSON.stringify(f.value)}`);
+    table = table.filter(`d['${f.name}'] ${conditionSymbol[f.condition]} ${JSON.stringify(f.value)}`);
   }
   return table;
 }
