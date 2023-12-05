@@ -1,5 +1,5 @@
-import { For, Index, Show, createSignal } from 'solid-js';
-import { FaSolidMagnifyingGlass, FaSolidPlus } from 'solid-icons/fa';
+import { Index, Show, createSignal } from 'solid-js';
+import { FaSolidMagnifyingGlass, FaSolidPlus, FaSolidXmark } from 'solid-icons/fa';
 import { Fab } from '../ui/Fab';
 import { Modal } from '../ui/Modal';
 import { FilterLayer } from './FilterLayer';
@@ -16,9 +16,6 @@ interface AnalysisPanelProps {
 
 export function AnalysisPanel(props: AnalysisPanelProps) {
   const [visible, setVisible] = createSignal(false);
-  function updateStep(id: number, nextStep: FlowStep) {
-    props.update(props.pipeline.changeStep(id, nextStep));
-  }
   function insertLayerBefore(mode: FlowStep['mode']) {
     props.update(props.pipeline.addStep(mode));
   }
@@ -27,8 +24,12 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
     <Show when={visible()} fallback={<Fab onClick={() => setVisible(true)} icon={<FaSolidMagnifyingGlass />} />}>
       <Modal close={() => setVisible(false)}>
         <div class={styles.Form}>
-          <Index each={props.pipeline.flow}>{(s, i) =>
-            <Layer step={s()} update={s => updateStep(i, s)} />
+          <Index each={props.pipeline.flow.filter(s => s.mode !== 'order')}>{(s, i) =>
+            <Layer 
+              step={s()} 
+              update={s => props.update(props.pipeline.changeStep(i, s))} 
+              remove={() => props.update(props.pipeline.removeStep(i))}
+            />
           }</Index>
           <AddLayer open={!props.pipeline.flow.length} insert={s => insertLayerBefore(s)} />
         </div>
@@ -37,9 +38,9 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
   )
 }
 
-function Layer(props: { step: FlowStepComputed, update: (s: FlowStep) => void }) {
+function Layer(props: { step: FlowStepComputed, update: (s: FlowStep) => void; remove: () => void }) {
   return (
-    <>
+    <div class={styles.Step}>
       {props.step.mode === 'aggregate' && (
         <AggregationLayer 
           aggregation={props.step}
@@ -52,7 +53,8 @@ function Layer(props: { step: FlowStepComputed, update: (s: FlowStep) => void })
           update={filters => props.update({ mode: 'filter', filters })}
         />
       )}
-    </>
+      {<button class={styles.RemoveLayer} onClick={props.remove}><FaSolidXmark /></button>}
+    </div>
   );
 }
 

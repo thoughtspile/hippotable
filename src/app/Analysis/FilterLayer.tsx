@@ -26,7 +26,7 @@ export function FilterLayer(props: FilterLayerProps) {
   }
   
   return (
-    <form onSubmit={onSubmit}>
+    <form class={styles.FilterLayer} onSubmit={onSubmit}>
       <Index each={filterList()}>{(filter, i) => 
         <FilterControl columns={columns()} filter={filter()} update={f => setFilter(i, f)} />
       }</Index>

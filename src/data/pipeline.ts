@@ -16,6 +16,7 @@ export interface Pipeline {
   output: ColumnTable;
   orderBy: (col: string) => Pipeline;
   addStep: (mode: FlowStep['mode']) => Pipeline;
+  removeStep: (i: number) => Pipeline;
   changeStep: (i: number, s: FlowStep) => Pipeline;
   order: Order;
   flow: FlowComputed;
@@ -40,6 +41,9 @@ export function createPipeline(
       if (mode === 'order') return pipeline;
       const step: FlowStep = mode === 'aggregate' ? { mode, key: [] } : { mode, filters: [] };
       return createPipeline(table, [...flow, step], order);
+    },
+    removeStep: (id) => {
+      return createPipeline(table, flow.filter((_, i) => i !== id), order);
     },
     changeStep: (id, step) => {
       return createPipeline(table, flow.map((s, i) => i === id ? step : s), order);

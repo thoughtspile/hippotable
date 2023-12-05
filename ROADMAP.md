@@ -23,12 +23,13 @@
     - un-aggregate
     - custom aggregation
     - add label
+  - Ordering
+    - show in step flow
   - Projection
     - Column selection
     - Column reordering
     - Computed columns
   - Add step before
-  - Remove step
   - Toggle step
   - Join
     - tabs / toggle view
