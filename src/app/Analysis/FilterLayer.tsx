@@ -1,8 +1,8 @@
-import { Index, createEffect, createMemo, createSignal } from 'solid-js';
+import { Index, createMemo } from 'solid-js';
 import styles from './FilterLayer.module.css';
 import sortBy from 'just-sort-by';
 import { type Condition, type Filter, type ColumnDescriptor, conditionSymbol, isFilterComplete, toColumnDescriptor } from '../../data/filter';
-import { FormButton, Input, SegmentedControl, Select } from '../ui/Form';
+import { Input, SegmentedControl, Select } from '../ui/Form';
 import type ColumnTable from 'arquero/dist/types/table/column-table';
 
 export interface FilterLayerProps {
@@ -12,26 +12,21 @@ export interface FilterLayerProps {
 
 export function FilterLayer(props: FilterLayerProps) {
   const columns = createMemo(() => sortBy(toColumnDescriptor(props.filter.input), c => c.name));
-  const [staging, setStaging] = createSignal<Partial<Filter>[]>(props.filter.filters);
   function filterList(): Partial<Filter>[] {
-    const items = staging();
+    const items = props.filter.filters;
     return !items.length || items.every(isFilterComplete) ? [...items, { value: '' }] : items;
   }
   function setFilter(i: number, f: Partial<Filter>) {
-    setStaging(s => s.length === i ? s.concat([f]) : s.map((base, ib) => i === ib ? f : base))
-  }
-  function onSubmit(e: Event) {
-    e.preventDefault();
-    props.update(staging().filter(isFilterComplete));
+    const { filters } = props.filter;
+    props.update(filters.length === i ? [...filters, f] : filters.map((base, ib) => i === ib ? f : base));
   }
   
   return (
-    <form class={styles.FilterLayer} onSubmit={onSubmit}>
+    <div class={styles.FilterLayer}>
       <Index each={filterList()}>{(filter, i) => 
         <FilterControl columns={columns()} filter={filter()} update={f => setFilter(i, f)} />
       }</Index>
-      <FormButton>Filter</FormButton>
-    </form>
+    </div>
   )
 }
 

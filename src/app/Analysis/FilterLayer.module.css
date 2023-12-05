@@ -1,5 +1,6 @@
 .FilterLayer {
   min-width: 0;
+  flex-grow: 1;
 }
 
 .FilterControl {

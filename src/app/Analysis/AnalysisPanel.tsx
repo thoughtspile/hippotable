@@ -1,10 +1,10 @@
-import { Index, Show, createSignal } from 'solid-js';
+import { For, Index, Show, createEffect, createSignal } from 'solid-js';
 import { FaSolidMagnifyingGlass, FaSolidPlus, FaSolidXmark } from 'solid-icons/fa';
 import { Fab } from '../ui/Fab';
 import { Modal } from '../ui/Modal';
 import { FilterLayer } from './FilterLayer';
 import { AggregationLayer } from './AggregationLayer';
-import type { FlowStep, FlowStepComputed } from '../../data/pipeline';
+import { flowActions, type Flow, type FlowStep, type FlowStepComputed } from '../../data/pipeline';
 import { FormButton, SegmentedControl } from '../ui/Form';
 import styles from './AnalysisPanel.module.css';
 import type { Pipeline } from '../../data/pipeline';
@@ -16,22 +16,26 @@ interface AnalysisPanelProps {
 
 export function AnalysisPanel(props: AnalysisPanelProps) {
   const [visible, setVisible] = createSignal(false);
-  function insertLayerBefore(mode: FlowStep['mode']) {
-    props.update(props.pipeline.addStep(mode));
+  const staging = () => props.pipeline.flow.filter(s => s.mode !== 'order');
+  function addStep(mode: FlowStep['mode']) {
+    setStaging(flowActions.addStep(staging(), mode));
+  }
+  function setStaging(value: Flow) {
+    props.update(props.pipeline.setFlow(value));
   }
   
   return (
     <Show when={visible()} fallback={<Fab onClick={() => setVisible(true)} icon={<FaSolidMagnifyingGlass />} />}>
       <Modal close={() => setVisible(false)}>
         <div class={styles.Form}>
-          <Index each={props.pipeline.flow.filter(s => s.mode !== 'order')}>{(s, i) =>
+          <Index each={staging().filter(s => s.mode !== 'order')}>{(s, i) =>
             <Layer 
               step={s()} 
-              update={s => props.update(props.pipeline.changeStep(i, s))} 
-              remove={() => props.update(props.pipeline.removeStep(i))}
+              update={s => setStaging(flowActions.changeStep(staging(), i, s))} 
+              remove={() => setStaging(flowActions.removeStep(staging(), i))}
             />
           }</Index>
-          <AddLayer open={!props.pipeline.flow.length} insert={s => insertLayerBefore(s)} />
+          <AddLayer open={!staging().length} insert={addStep} />
         </div>
       </Modal>
     </Show>

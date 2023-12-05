@@ -1,8 +1,8 @@
-import { For, Index, createMemo, createSignal } from 'solid-js';
+import { Index, createMemo } from 'solid-js';
 import styles from './AggregationLayer.module.css';
 import sortBy from 'just-sort-by';
 import type { Aggregation } from '../../data/aggregation';
-import { FormButton, SegmentedControl, Select } from '../ui/Form';
+import { SegmentedControl, Select } from '../ui/Form';
 import type ColumnTable from 'arquero/dist/types/table/column-table';
 
 export interface AggregationLayerProps {
@@ -12,26 +12,21 @@ export interface AggregationLayerProps {
 
 export function AggregationLayer(props: AggregationLayerProps) {
   const columns = createMemo(() => sortBy(props.aggregation.input.columnNames()));
-  const [staging, setStaging] = createSignal<Aggregation>(props.aggregation);
-  function onSubmit(e: Event) {
-    e.preventDefault();
-    props.update(staging());
-  }
   function setValue(oldValue: string | null, nextValue: string) {
-    const { key } = staging();
+    const { key } = props.aggregation;
     if (oldValue == null) {
-      setStaging({ key: [...key, nextValue] });
+      props.update({ key: [...key, nextValue] });
     } else {
       const nextKey = key
         .filter(e => e !== nextValue)
         .map(e => e === oldValue ? nextValue : e);
-      setStaging(({ key: nextKey }));
+      props.update(({ key: nextKey }));
     }
   }
   function keyLevels() {
     let options = columns().map(c => ({ label: c, value: c }));
     const result: ({ value: string; options: typeof options })[] = [];
-    for (const level of staging().key) {
+    for (const level of props.aggregation.key) {
       result.push({ value: level, options });
       options = options.filter(o => o.value !== level);
     }
@@ -40,7 +35,7 @@ export function AggregationLayer(props: AggregationLayerProps) {
   }
   
   return (
-    <form onSubmit={onSubmit} class={styles.AggregationLayer}>
+    <div class={styles.AggregationLayer}>
       <SegmentedControl>
         <Index each={keyLevels()}>{(level) => (
           <Select 
@@ -50,7 +45,6 @@ export function AggregationLayer(props: AggregationLayerProps) {
           />
         )}</Index>
       </SegmentedControl>
-      <FormButton>Aggregate</FormButton>
-    </form>
+    </div>
   )
 }

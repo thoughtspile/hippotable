@@ -11,13 +11,25 @@ export type FlowStepComputed = FlowStep & { input: ColumnTable };
 export type Flow = FlowStep[];
 export type FlowComputed = FlowStepComputed[];
 
+export const flowActions = {
+  addStep: (flow: Flow, mode: FlowStep['mode']) => {
+    if (mode === 'order') return flow;
+    const step: FlowStep = mode === 'aggregate' ? { mode, key: [] } : { mode, filters: [] };
+    return [...flow, step];
+  },
+  removeStep: (flow: Flow, id: number) => {
+    return flow.filter((_, i) => i !== id)
+  },
+  changeStep: (flow: Flow, id: number, step: FlowStep) => {
+    return flow.map((s, i) => i === id ? step : s)
+  },
+};
+
 export interface Pipeline {
   input: ColumnTable;
   output: ColumnTable;
   orderBy: (col: string) => Pipeline;
-  addStep: (mode: FlowStep['mode']) => Pipeline;
-  removeStep: (i: number) => Pipeline;
-  changeStep: (i: number, s: FlowStep) => Pipeline;
+  setFlow: (flow: Flow) => Pipeline;
   order: Order;
   flow: FlowComputed;
 }
@@ -29,7 +41,7 @@ export function createPipeline(
   order: Order = emptyOrder()
 ): Pipeline {
   const cache = computeFlow(table, [...flow, { mode: 'order', ...order }]);
-  const pipeline: Pipeline = {
+  return {
     input: table,
     output: cache.output,
     flow: cache.flow,
@@ -38,19 +50,8 @@ export function createPipeline(
       col, 
       dir: col === order.col && order.dir === 'asc' ? 'desc' : 'asc'
     }),
-    addStep: (mode) => {
-      if (mode === 'order') return pipeline;
-      const step: FlowStep = mode === 'aggregate' ? { mode, key: [] } : { mode, filters: [] };
-      return createPipeline(table, [...flow, step], order);
-    },
-    removeStep: (id) => {
-      return createPipeline(table, flow.filter((_, i) => i !== id), order);
-    },
-    changeStep: (id, step) => {
-      return createPipeline(table, flow.map((s, i) => i === id ? step : s), order);
-    }
+    setFlow: (flow) => createPipeline(table, flow, order),
   };
-  return pipeline;
 }
 
 export function computeFlow(table: ColumnTable, flow: Flow) {
