@@ -13,9 +13,9 @@ export interface FilterLayerProps {
 export function FilterLayer(props: FilterLayerProps) {
   const columns = createMemo(() => sortBy(toColumnDescriptor(props.filter.input), c => c.name));
   const [staging, setStaging] = createSignal<Partial<Filter>[]>(props.filter.filters);
-  function filterList() {
+  function filterList(): Partial<Filter>[] {
     const items = staging();
-    return !items.length || items.every(isFilterComplete) ? [...items, {}] : items;
+    return !items.length || items.every(isFilterComplete) ? [...items, { value: '' }] : items;
   }
   function setFilter(i: number, f: Partial<Filter>) {
     setStaging(s => s.length === i ? s.concat([f]) : s.map((base, ib) => i === ib ? f : base))

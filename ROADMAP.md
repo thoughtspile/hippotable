@@ -13,7 +13,6 @@
   - clear order on aggregation
   - Filters
     - remove filter
-    - empty string value
     - datetime
     - column pivot
     - or conditions
