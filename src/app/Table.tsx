@@ -1,4 +1,4 @@
-import { For, Show, createEffect, createMemo, createSignal, onCleanup, onMount } from 'solid-js';
+import { For, Show, createMemo, createSignal, onCleanup, onMount } from 'solid-js';
 import './Table.css';
 import type ColumnTable from 'arquero/dist/types/table/column-table';
 import { FaSolidSortDown, FaSolidSortUp } from 'solid-icons/fa';
@@ -10,7 +10,6 @@ import { createPipeline } from '../data/pipeline';
 
 export function Table(props: { table: ColumnTable }) {
   const [pipeline, setPipeline] = createSignal(createPipeline(props.table));
-  const order = createMemo(() => pipeline().order);
 
   return (
     <>
@@ -26,7 +25,6 @@ export function Table(props: { table: ColumnTable }) {
 }
 
 const rowHeight = 19;
-const totalPaddingX = 12;
 
 type TableViewProps = {
   table: ColumnTable;
@@ -62,23 +60,25 @@ function TableView(props: TableViewProps) {
       return next;
     });
   });
-  onMount(() => {
-    for (const td of tableRef.querySelectorAll('tr:first-child td, th')) {
-      resizeObserver.observe(td);
-    }
-  });
+  const observeSize = (el: HTMLElement) => resizeObserver.observe(el);
   onCleanup(() => resizeObserver.disconnect());
 
   return (
     <table ref={tableRef}>
       <thead>
         <For each={cols()}>{col => 
-          <HeaderCell orderBy={props.orderBy} order={props.order} width={colWidths().get(col)} name={col} />
+          <HeaderCell 
+            ref={observeSize} 
+            orderBy={props.orderBy} 
+            order={props.order} 
+            width={colWidths().get(col)} 
+            name={col} 
+          />
         }</For>
       </thead>
       <tbody>
         <tr style={{ height: `${virtualizer.getVirtualItems()[0].start}px` }}>
-          <For each={cols()}>{col => <td data-col={col} style={{ 'min-width': `${colWidths().get(col)}px` }} />}</For>
+          <For each={cols()}>{col => <td ref={observeSize} data-col={col} style={{ 'min-width': `${colWidths().get(col)}px` }} />}</For>
         </tr>
         <For each={virtualizer.getVirtualItems().map((el) => el.index)}>{(index) => (
           <Show when={index < numRows()}><Row table={props.table} cols={cols()} index={index} /></Show>
@@ -102,10 +102,17 @@ function Row(props: RowProps) {
   );
 }
 
-function HeaderCell(props: { order: Order, name: string; orderBy: (c: string) => void; width: number }) {
+interface HeaderCellProps {
+  order: Order;
+  name: string; 
+  orderBy: (c: string) => void; 
+  width: number;
+  ref: (e: HTMLElement) => void;
+}
+function HeaderCell(props: HeaderCellProps) {
   const dir = () => props.order.col === props.name ? props.order.dir : null;
   return (
-    <th data-col={props.name} onClick={() => props.orderBy(props.name)} style={{ 'min-width': `${props.width}px` }}>
+    <th ref={props.ref} data-col={props.name} onClick={() => props.orderBy(props.name)} style={{ 'min-width': `${props.width}px` }}>
       {props.name}
       {dir() === 'desc' && <FaSolidSortUp />}
       {dir() === 'asc' && <FaSolidSortDown />}

@@ -6,7 +6,6 @@
   - append
   - streaming processing
 - table
-  - fix: column size on aggregation
   - datetime format
 - Analysis
   - Filters

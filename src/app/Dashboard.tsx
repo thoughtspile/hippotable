@@ -13,9 +13,10 @@ export function Dashboard() {
     source && setFile(source);
   });
   const [table] = createResource(file, file => file ? parseCsv(file) : null);
+  const loading = () => initializing() || (file() && !table());
 
   return (
-    <Show when={table()} fallback={<Welcome onSubmit={persistSource} loading={initializing() || !table()} />}>
+    <Show when={table()} fallback={<Welcome onSubmit={persistSource} loading={loading()} />}>
       <Table table={table()} />
     </Show>
   );
