@@ -5,7 +5,7 @@ import devtools from 'solid-devtools/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  base: '/hippostats',
+  base: '/hippotable',
   integrations: [solidJs()],
   vite: {
     plugins: [

@@ -18,7 +18,7 @@ export async function writeFile(file: File) {
 }
 
 function goToTable(src: string) {
-  const selfUrl = new URL('/hippostats/app', location.href);
+  const selfUrl = new URL('/hippotable/app', location.href);
   selfUrl.searchParams.set('source', src);
   location.assign(selfUrl);
 }

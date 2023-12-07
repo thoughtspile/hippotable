@@ -1,5 +1,5 @@
 {
-  "name": "hippostats",
+  "name": "hippotable",
   "version": "0.1.0",
   "description": "Lightweight data analysis in your browser",
   "main": "dist/index.js",
@@ -13,14 +13,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/thoughtspile/hippostats.git"
+    "url": "git+ssh://git@github.com/thoughtspile/hippotable.git"
   },
   "author": "Vladimir Klepov v.klepov@gmail.com",
   "license": "GPL-3.0-or-later",
   "bugs": {
-    "url": "https://github.com/thoughtspile/hippostats/issues"
+    "url": "https://github.com/thoughtspile/hippotable/issues"
   },
-  "homepage": "https://github.com/thoughtspile/hippostats#readme",
+  "homepage": "https://github.com/thoughtspile/hippotable#readme",
   "dependencies": {
     "@astrojs/solid-js": "^3.0.2",
     "@tanstack/solid-virtual": "^3.0.0-beta.6",

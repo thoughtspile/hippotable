@@ -9,7 +9,7 @@ export function Uploader() {
         <FaSolidUpload />&nbsp;Upload CSV
         <input type="file" accept=".csv,.tsv,text/csv" onInput={e => persistSource(e.currentTarget.files[0])} />
       </label>
-      <button class={styles.Button} onClick={() => persistSource('/hippostats/big.csv')}>
+      <button class={styles.Button} onClick={() => persistSource('/hippotable/big.csv')}>
         <FaSolidEye />&nbsp;View demo
       </button>
     </>
