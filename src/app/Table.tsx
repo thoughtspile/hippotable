@@ -120,4 +120,8 @@ function HeaderCell(props: HeaderCellProps) {
   );
 }
 
-const stringify = (val: unknown) => val == null ? null : String(val);
+const stringify = (val: unknown) => {
+  if (val == null) return null;
+  if (val instanceof Date) return val.toLocaleString();
+  return String(val);
+};

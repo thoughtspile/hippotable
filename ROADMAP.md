@@ -6,7 +6,7 @@
   - append
   - streaming processing
 - table
-  - datetime format
+  - custom date / number formatters
 - Analysis
   - Filters
     - remove filter
