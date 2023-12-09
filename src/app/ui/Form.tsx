@@ -4,8 +4,12 @@ import type { JSX } from "solid-js/jsx-runtime";
 
 type SelectOption = { label: string; value: string };
 export function Select(props: JSX.SelectHTMLAttributes<HTMLSelectElement> & { options: SelectOption[] }) {
+  function restProps() {
+    const { options, ...rest } = props;
+    return rest;
+  }
   return (
-    <select {...props} class={`${styles.FormControl} ${props.class || ''}`}>
+    <select {...restProps()} class={`${styles.FormControl} ${props.class || ''}`}>
       <option value=""></option>
       <For each={props.options}>{op =>
         <option value={op.value} selected={op.value === props.value}>{op.label}</option>

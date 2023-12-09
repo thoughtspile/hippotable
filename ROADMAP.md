@@ -3,10 +3,10 @@
 - star on github
 - github readme
 - does not work on mobile
+- more fun demo dataset
 - Import
   - restart
 - Aggregation
-  - add label
   - custom aggregation
 - Projection
   - Column selection

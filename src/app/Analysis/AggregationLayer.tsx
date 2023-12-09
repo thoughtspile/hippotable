@@ -36,15 +36,18 @@ export function AggregationLayer(props: AggregationLayerProps) {
   
   return (
     <div class={styles.AggregationLayer}>
-      <SegmentedControl>
-        <Index each={keyLevels()}>{(level) => (
-          <Select 
-            value={level().value}
-            onChange={e => setValue(level().value, e.target.value)}
-            options={level().options}
-          />
-        )}</Index>
-      </SegmentedControl>
+      <label>
+        Group by
+        <SegmentedControl>
+          <Index each={keyLevels()}>{(level) => (
+            <Select 
+              value={level().value}
+              onChange={e => setValue(level().value, e.target.value)}
+              options={level().options}
+            />
+          )}</Index>
+        </SegmentedControl>
+      </label>
     </div>
   )
 }
