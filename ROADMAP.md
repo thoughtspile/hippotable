@@ -1,7 +1,21 @@
+## Must have
+
 - star on github
-- readme
+- github readme
 - Import
   - restart
+- Aggregation
+  - add label
+  - custom aggregation
+- Projection
+  - Column selection
+  - Column reordering
+- export
+  - download csv
+
+## Backlog
+
+- Import
   - JSON import
   - append
   - streaming processing
@@ -14,18 +28,14 @@
     - column pivot
     - or conditions
     - value suggest
+    - custom expression
   - Aggregation
     - un-aggregate
-    - custom aggregation
-    - add label
   - Ordering
     - show in step flow
     - lexicographic multi-column order
-  - Projection
-    - Column selection
-    - Column reordering
   - Add step before
-  - Toggle step
+  - Toggle step on / off
   - Join
     - tabs / toggle view
     - named steps
