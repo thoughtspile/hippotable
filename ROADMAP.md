@@ -2,6 +2,7 @@
 
 - star on github
 - github readme
+- does not work on mobile
 - Import
   - restart
 - Aggregation
@@ -10,8 +11,6 @@
 - Projection
   - Column selection
   - Column reordering
-- export
-  - download csv
 
 ## Backlog
 
@@ -19,6 +18,7 @@
   - JSON import
   - append
   - streaming processing
+  - tsv
 - table
   - custom date / number formatters
 - Analysis
@@ -41,8 +41,9 @@
     - named steps
     - multiple import
 - export
-  - download csv
+  - download JSON
   - save pipeline
+  - download HTML
 - text search
 - charts
   - scatter / line / bar

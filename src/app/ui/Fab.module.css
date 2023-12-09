@@ -1,4 +1,5 @@
 .Fab {
+  z-index: 1;
   background-color: #007bff;
   transition: filter 300ms ease;
   color: white;
