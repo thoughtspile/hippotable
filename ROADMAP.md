@@ -1,9 +1,10 @@
 ## Must have
 
 - star on github
-- github readme
 - does not work on mobile
 - more fun demo dataset
+- docs
+- add analytics
 - Import
   - restart
 - Aggregation
