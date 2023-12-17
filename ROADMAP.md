@@ -5,7 +5,6 @@
 - more fun demo dataset
 - docs
 - Aggregation
-  - all
   - custom aggregation
 - Projection
   - Column selection

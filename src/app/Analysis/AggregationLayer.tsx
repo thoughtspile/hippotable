@@ -1,7 +1,7 @@
 import { Index, createMemo } from 'solid-js';
 import styles from './AggregationLayer.module.css';
 import sortBy from 'just-sort-by';
-import type { Aggregation } from '../../data/aggregation';
+import { NO_GROUPBY, type Aggregation } from '../../data/aggregation';
 import { SegmentedControl, Select } from '../ui/Form';
 import type ColumnTable from 'arquero/dist/types/table/column-table';
 
@@ -13,8 +13,13 @@ export interface AggregationLayerProps {
 export function AggregationLayer(props: AggregationLayerProps) {
   const columns = createMemo(() => sortBy(props.aggregation.input.columnNames()));
   function setValue(oldValue: string | null, nextValue: string) {
+    console.log({oldValue, nextValue});
     const { key } = props.aggregation;
-    if (oldValue == null) {
+    if (!nextValue) {
+      props.update({ key: key.filter(l => l !== oldValue) });
+    } else if (nextValue === NO_GROUPBY) {
+      props.update({ key: [nextValue] });
+    } else if (oldValue == null) {
       props.update({ key: [...key, nextValue] });
     } else {
       const nextKey = key
@@ -28,9 +33,13 @@ export function AggregationLayer(props: AggregationLayerProps) {
     const result: ({ value: string; options: typeof options })[] = [];
     for (const level of props.aggregation.key) {
       result.push({ value: level, options });
-      options = options.filter(o => o.value !== level);
+      options = level === NO_GROUPBY ? [] : options.filter(o => o.value !== level);
+      if (options.length === 0) {
+        break;
+      }
     }
-    result.push({ value: null, options });
+    options.length && result.push({ value: null, options });
+    result[0].options.unshift({ label: '—', value: NO_GROUPBY });
     return result;
   }
   
@@ -39,7 +48,7 @@ export function AggregationLayer(props: AggregationLayerProps) {
       <label>
         Group by
         <SegmentedControl>
-          <Index each={keyLevels()}>{(level) => (
+          <Index each={keyLevels()}>{(level, i) => (
             <Select 
               value={level().value}
               onChange={e => setValue(level().value, e.target.value)}
