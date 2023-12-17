@@ -1,6 +1,10 @@
 import type ColumnTable from "arquero/dist/types/table/column-table";
+import escapeStringRegexp from "escape-string-regexp";
 
-export type Condition = 'eq' | 'neq' | 'lt' | 'lte' | 'gt' | 'gte';
+export type Condition = 
+  'eq' | 'neq' | 
+  'lt' | 'lte' | 'gt' | 'gte' | 
+  'startswith' | 'endswith' | 'contains' | 'matches';
 
 export interface Filter {
   name: string;
@@ -14,13 +18,31 @@ export interface ColumnDescriptor {
   castValue: (v: string) => unknown;
 }
 
-export const conditionSymbol: Record<Condition, string> = {
-  eq: '==',
+export const conditionLabel: Record<Condition, string> = {
+  eq: '=',
   neq: '!=',
   lt: '<',
   lte: '<=',
   gt: '>',
   gte: '>=',
+  startswith: 'starts with',
+  endswith: 'ends with',
+  contains: 'contains',
+  matches: 'regexp',
+}
+
+const infix = (op: string) => (l: string, r: string) => `${l} ${op} ${JSON.stringify(r)}`;
+export const renderCondition: Record<Condition, (lhs: string, rhs: unknown) => string> = {
+  eq: infix('==='),
+  neq: infix('!=='),
+  lt: infix('<'),
+  lte: infix('<='),
+  gt: infix('>'),
+  gte: infix('>='),
+  startswith: (l, r) => `startsWith(${l}, '${r}')`,
+  endswith: (l, r) => `endsWith(${l}, '${r}')`,
+  contains: (l, r) => `match(${l}, /${escapeStringRegexp(String(r))}/) != null`,
+  matches: (l, r) => `match(${l}, /${r}/) != null`,
 };
 
 export function isFilterComplete(f: Partial<Filter>): f is Filter {
@@ -32,7 +54,12 @@ type BaseType = "string" | "number" | "boolean";
 function getConditions(t: BaseType): Condition[] {
   const base: Condition[] = ['eq', 'neq'];
   const ordinal: Condition[] = ['gt', 'gte', 'lt', 'lte'];
-  return [...base, ...(t === 'number' ? ordinal : [])];
+  const string: Condition[] = ['contains', 'endswith', 'startswith', 'matches'];
+  return [
+    ...base, 
+    ...(t === 'number' ? ordinal : []),
+    ...(t === 'string' ? string : [])
+  ];
 }
 
 function castValue(v: string, target: BaseType) {
@@ -56,7 +83,8 @@ export function toColumnDescriptor(table: ColumnTable) {
 export function applyFilters(table: ColumnTable, options: { filters: Filter[] }) {
   for (const f of options.filters) {
     if (!isFilterComplete(f)) continue;
-    const expr = `d['${f.name}'] ${conditionSymbol[f.condition]} ${f.value === '' ? null : JSON.stringify(f.value)}`;
+    const expr = renderCondition[f.condition](`d['${f.name}']`, f.value === '' ? null : f.value);
+    console.log(expr);
     table = table.filter(expr);
   }
   return table;

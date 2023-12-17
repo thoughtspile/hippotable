@@ -1,7 +1,7 @@
 import { Index, createMemo } from 'solid-js';
 import styles from './FilterLayer.module.css';
 import sortBy from 'just-sort-by';
-import { type Condition, type Filter, type ColumnDescriptor, conditionSymbol, isFilterComplete, toColumnDescriptor } from '../../data/filter';
+import { type Condition, type Filter, type ColumnDescriptor, isFilterComplete, toColumnDescriptor, conditionLabel } from '../../data/filter';
 import { Input, SegmentedControl, Select } from '../ui/Form';
 import type ColumnTable from 'arquero/dist/types/table/column-table';
 
@@ -47,7 +47,7 @@ function FilterControl(props: FilterControlProps) {
       <Select 
         disabled={!activeColumn()} 
         value={props.filter.condition}
-        options={activeColumn()?.availableConditions?.map(c => ({ value: c, label: conditionSymbol[c] }))}
+        options={activeColumn()?.availableConditions?.map(c => ({ value: c, label: conditionLabel[c] }))}
         onChange={e => props.update({ ...props.filter, condition: e.target.value as Condition })}
       />
       <Input 

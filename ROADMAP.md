@@ -2,8 +2,6 @@
 
 - does not work on mobile
 - docs
-- Filters
-  - string ops
 - Aggregation
   - custom aggregation
 - Projection

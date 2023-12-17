@@ -27,6 +27,7 @@
     "@tanstack/virtual-core": "^3.0.0-alpha.1",
     "arquero": "^5.2.0",
     "astro": "^3.2.3",
+    "escape-string-regexp": "^5.0.0",
     "just-sort-by": "^3.2.0",
     "nanoid": "^5.0.4",
     "solid-icons": "^1.0.12",
