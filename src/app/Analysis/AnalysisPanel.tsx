@@ -26,7 +26,7 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
   }
   
   return (
-    <Show when={visible()} fallback={<Fab onClick={() => setVisible(true)} icon={<FaSolidMagnifyingGlass />} />}>
+    <Show when={visible()} fallback={<Fab primary onClick={() => setVisible(true)} icon={<FaSolidMagnifyingGlass />} />}>
       <Modal close={() => setVisible(false)}>
         <div class={styles.Form}>
           <Index each={staging().filter(s => s.mode !== 'order')}>{(s, i) =>

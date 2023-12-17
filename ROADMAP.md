@@ -5,9 +5,8 @@
 - more fun demo dataset
 - docs
 - add analytics
-- Import
-  - restart
 - Aggregation
+  - all
   - custom aggregation
 - Projection
   - Column selection

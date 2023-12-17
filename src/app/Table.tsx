@@ -8,6 +8,7 @@ import { FabContainer } from './ui/Fab';
 import type { Order } from '../data/order';
 import { createPipeline } from '../data/pipeline';
 import { Export } from './Export';
+import { ImportFab } from './ImportFab';
 
 export function Table(props: { table: ColumnTable }) {
   const [pipeline, setPipeline] = createSignal(createPipeline(props.table));
@@ -19,6 +20,7 @@ export function Table(props: { table: ColumnTable }) {
         orderBy={col => setPipeline(pipeline().orderBy(col))} 
         order={pipeline().order}
       />
+      <ImportFab />
       <Export table={pipeline().output} />
       <AnalysisPanel pipeline={pipeline()} update={setPipeline} />
       <FabContainer />

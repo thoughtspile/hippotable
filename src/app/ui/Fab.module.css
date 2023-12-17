@@ -1,8 +1,7 @@
 .Fab {
+  background: white;
   z-index: 1;
-  background-color: #007bff;
   transition: filter 300ms ease;
-  color: white;
   border: none;
   border-radius: 50%;
   width: 3rem;
@@ -13,6 +12,11 @@
   justify-content: center;
   cursor: pointer;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
+}
+
+.Fab.primary {
+  background-color: #007bff;
+  color: white;
 }
 
 .Fab:hover {
