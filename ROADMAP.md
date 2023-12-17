@@ -4,7 +4,6 @@
 - does not work on mobile
 - more fun demo dataset
 - docs
-- add analytics
 - Aggregation
   - all
   - custom aggregation
