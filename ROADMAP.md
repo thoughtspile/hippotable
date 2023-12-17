@@ -1,9 +1,10 @@
 ## Must have
 
-- star on github
 - does not work on mobile
 - more fun demo dataset
 - docs
+- Filters
+  - string ops
 - Aggregation
   - custom aggregation
 - Projection

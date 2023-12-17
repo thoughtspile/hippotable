@@ -15,6 +15,7 @@
   user-select: none;
   font-weight: bold;
   padding: 0.75rem 2rem;
+  color: inherit;
   white-space: nowrap;
   line-height: 1;
   border-radius: 3rem;
@@ -24,6 +25,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: #fff;
 }
 
 .Button.primary {
