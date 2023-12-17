@@ -1,7 +1,6 @@
 ## Must have
 
 - does not work on mobile
-- more fun demo dataset
 - docs
 - Filters
   - string ops
