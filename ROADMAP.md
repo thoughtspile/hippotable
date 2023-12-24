@@ -17,7 +17,17 @@
   - Projection
     - Column selection
     - Column reordering
+- UI / UX
+  - more descriptive import / export icons
+  - close analysis on esc / click outside
+  - fast filter via header
 - Analysis
+  - cleanup
+    - fill na
+    - deduplicate
+  - reshape
+    - explode
+    - binary cols
   - Filters
     - remove filter
     - datetime
@@ -25,8 +35,6 @@
     - or conditions
     - value suggest
     - custom expression
-  - Aggregation
-    - un-aggregate
   - Ordering
     - show in step flow
     - lexicographic multi-column order
@@ -36,6 +44,9 @@
     - tabs / toggle view
     - named steps
     - multiple import
+  - Computed
+    - unhide
+    - add hints
 - export
   - download JSON
   - save pipeline
@@ -46,3 +57,8 @@
   - heatmap
   - export to image
 - share
+- QA & CI / CD
+  - prettier
+  - typecheck
+  - add tests
+  - PR github action

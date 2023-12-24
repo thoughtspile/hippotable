@@ -75,7 +75,8 @@ function AddLayer(props: { insert: (mode: FlowStep['mode']) => void; exclude: Fl
       <SegmentedControl class={styles.AddActions}>
         {props.exclude !== 'aggregate' && <FormButton onClick={() => props.insert('aggregate')}>Aggregation</FormButton>}
         {props.exclude !== 'filter' && <FormButton onClick={() => props.insert('filter')}>Filter</FormButton>}
-        {props.exclude !== 'compute' && <FormButton onClick={() => props.insert('compute')}>Computed</FormButton>}
+        {/* TODO: restore with better UX */}
+        {/* {props.exclude !== 'compute' && <FormButton onClick={() => props.insert('compute')}>Computed</FormButton>} */}
       </SegmentedControl>
     </div>
   );
