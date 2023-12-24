@@ -2,8 +2,6 @@
 
 - does not work on mobile
 - docs
-- Aggregation
-  - custom aggregation
 
 ## Backlog
 
@@ -14,6 +12,7 @@
   - tsv
 - table
   - custom date / number formatters
+  - recompute column widths on table change
   - Projection
     - Column selection
     - Column reordering
@@ -44,6 +43,15 @@
     - tabs / toggle view
     - named steps
     - multiple import
+  - Aggregation
+    - parametrized aggregations (quantile)
+    - multi-column aggregation (correlation / covariance)
+    - replace key when followed by filter
+  - array columns
+    - display
+    - filter
+    - from aggregation (array_agg)
+    - from computed
   - Computed
     - unhide
     - add hints

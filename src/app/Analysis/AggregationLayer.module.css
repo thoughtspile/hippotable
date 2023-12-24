@@ -5,3 +5,9 @@
   flex-grow: 1;
   min-width: 0;
 }
+
+.AggregationLayer label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}

@@ -16,7 +16,7 @@ export type FlowComputed = FlowStepComputed[];
 function getStep(mode: FlowStep['mode']): FlowStep {
   switch (mode) {
     case 'order': return { mode, col: null, dir: 'asc' };
-    case 'aggregate': return { mode, key: [] };
+    case 'aggregate': return { mode, key: [], columns: [] };
     case 'filter': return { mode, filters: [] };
     case 'compute': return { mode, columns: [] };
   }

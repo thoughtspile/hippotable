@@ -22,11 +22,12 @@ export function FilterLayer(props: FilterLayerProps) {
   }
   
   return (
-    <div class={styles.FilterLayer}>
+    <label class={styles.FilterLayer}>
+      Filter
       <Index each={filterList()}>{(filter, i) => 
         <FilterControl columns={columns()} filter={filter()} update={f => setFilter(i, f)} />
       }</Index>
-    </div>
+    </label>
   )
 }
 
