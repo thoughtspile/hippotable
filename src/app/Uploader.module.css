@@ -4,6 +4,12 @@
   }
 }
 
+.ButtonGroup {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
 .Button {
   box-sizing: border-box;
   border: none;

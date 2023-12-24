@@ -4,9 +4,6 @@
 - docs
 - Aggregation
   - custom aggregation
-- Projection
-  - Column selection
-  - Column reordering
 
 ## Backlog
 
@@ -17,6 +14,9 @@
   - tsv
 - table
   - custom date / number formatters
+  - Projection
+    - Column selection
+    - Column reordering
 - Analysis
   - Filters
     - remove filter

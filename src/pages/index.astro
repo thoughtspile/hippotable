@@ -1,22 +1,12 @@
 ---
+import { Logo } from '../app/Logo.tsx';
 import { Uploader } from '../app/Uploader';
 import Layout from '../layout.astro';
 ---
 
 <Layout>
   <section class="Landing">
-    <h1 class="Title">
-      <svg viewBox="0 -18 125 22">
-        <defs>
-          <linearGradient id="rainbow" x1="0" x2="100%" y1="0" y2="100%" gradientUnits="userSpaceOnUse" >
-            <stop stop-color="#01386a" offset="0%"/> 
-            <stop stop-color="#66FFB3" offset="100%"/>
-          </linearGradient>
-        </defs>
-          <text fill="url(#rainbow)">HippoTable</text>
-      </svg>
-      A better way to analyze data
-    </h1>
+    <div class="Title"><Logo /></div>
     <div class="actions"><Uploader client:load /></div>
     <div class="CardContainer">
       <div class="Card">
@@ -68,10 +58,6 @@ import Layout from '../layout.astro';
   margin: 2rem 0 0;
   width: 80vw;
   color: #01386a;
-}
-
-.Title svg {
-  margin-left: -1%;
 }
 
 .CardContainer {

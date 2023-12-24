@@ -2,10 +2,12 @@
   min-height: 100vh;
   display: flex;
   align-items: center;
+  flex-direction: column;
   justify-content: center;
   gap: 1rem;
   background: linear-gradient(to right, #FFA566, #FF1E66);
   position: relative;
+  padding: 1rem;
 }
 
 .Spinner {

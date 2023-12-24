@@ -6,7 +6,7 @@ import { GitHubLogo } from './GitHubLogo';
 
 export function Uploader() {
   return (
-    <>
+    <div class={styles.ButtonGroup}>
       <label class={`${styles.Button} ${styles.primary}`}>
         <FaSolidUpload />&nbsp;Open CSV
         <input type="file" accept=".csv,.tsv,text/csv" onInput={e => persistSource(e.currentTarget.files[0])} />
@@ -17,6 +17,6 @@ export function Uploader() {
       <a href={GH_REPO} target="_blank" class={styles.Button}>
         <GitHubLogo />&nbsp;Star on GitHub
       </a>
-    </>
+    </div>
   );
 }
