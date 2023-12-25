@@ -2,8 +2,10 @@
 import socialImage from '../docs/hippotable.png';
 
 const title = 'Hippotable | data analytics toolkit';
-const url = 'https://blog.thoughtspile.tech/hippotable';
+const site = 'https://blog.thoughtspile.tech';
+const selfLink = new URL('/hippotable', site).href;
 const description = 'View and analyze CSV in your browser — it\'s fast!';
+const socialImageAbs = new URL(socialImage.src, site).href;
 ---
 
 <html>
@@ -13,7 +15,7 @@ const description = 'View and analyze CSV in your browser — it\'s fast!';
 		
     <meta property="og:type" content="website">
     <meta property="og:title" content={title}>
-    <meta property="og:url" content={url}>
+    <meta property="og:url" content={selfLink}>
     <meta property="og:site_name" content={title}>
     <meta property="og:locale" content="en_US">
 		
@@ -24,8 +26,8 @@ const description = 'View and analyze CSV in your browser — it\'s fast!';
 		<meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:creator" content="@thoughtspile">
     
-		<meta name="twitter:image" content={url + socialImage}>
-		<meta property="og:image" content={url + socialImage}>
+		<meta name="twitter:image" content={socialImageAbs}>
+		<meta property="og:image" content={socialImageAbs}>
 
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script defer data-domain="blog.thoughtspile.tech" src="https://t.thoughtspile.tech/js/script.js"></script>
