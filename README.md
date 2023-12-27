@@ -23,6 +23,18 @@ npm ci
 npm run dev
 ```
 
+## Contributing
+
+See [./CONTRIBUTING.md]
+
+## Acknowledgements
+
+[Arquero](https://github.com/uwdata/arquero) provides the solid dataframe foundation — thanks to [Jeffrey Heer](https://twitter.com/jeffrey_heer) and all the contributors!
+
+[SolidJS](https://github.com/solidjs/solid/) gives us the good developer experience with the performance of vanilla DOM — great work by [Ryan Carniato](https://twitter.com/RyanCarniato) and the team.
+
+Last but not least, [TanStack virtual](https://github.com/TanStack/virtual) by [Tanner Linsley](https://twitter.com/tannerlinsley) gives us powerful table virtualization — and is one of the few projects that support SolidJS.
+
 ## License
 
 [GPLv3 License](./LICENSE)

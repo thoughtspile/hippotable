@@ -1,9 +1,6 @@
-## Must have
-
-- docs
-
 ## Backlog
 
+- Docs
 - Import
   - JSON import
   - append
