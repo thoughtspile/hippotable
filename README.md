@@ -19,7 +19,7 @@ Features:
 Clone this repository, then:
 
 ```sh
-npm run ci
+npm ci
 npm run dev
 ```
 
