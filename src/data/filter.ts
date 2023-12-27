@@ -39,10 +39,10 @@ export const renderCondition: Record<Condition, (lhs: string, rhs: unknown) => s
   lte: infix('<='),
   gt: infix('>'),
   gte: infix('>='),
-  startswith: (l, r) => `startsWith(${l}, '${r}')`,
-  endswith: (l, r) => `endsWith(${l}, '${r}')`,
-  contains: (l, r) => `match(${l}, /${escapeStringRegexp(String(r))}/) != null`,
-  matches: (l, r) => `match(${l}, /${r}/) != null`,
+  startswith: (l, r) => `startswith(${l}, '${r || ''}')`,
+  endswith: (l, r) => `endswith(${l}, '${r || ''}')`,
+  contains: (l, r) => `match(${l}, /${escapeStringRegexp(String(r || ''))}/) != null`,
+  matches: (l, r) => r ? `match(${l}, /${r}/) != null` : null,
 };
 
 export function isFilterComplete(f: Partial<Filter>): f is Filter {
