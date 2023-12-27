@@ -7,9 +7,9 @@ export type Condition =
   'startswith' | 'endswith' | 'contains' | 'matches';
 
 export interface Filter {
-  name: string;
-  condition: Condition;
-  value: unknown;
+  name?: string;
+  condition?: Condition;
+  value?: unknown;
 }
 
 export interface ColumnDescriptor {

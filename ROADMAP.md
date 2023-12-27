@@ -63,6 +63,4 @@
 - share
 - QA & CI / CD
   - prettier
-  - typecheck
   - add tests
-  - PR github action

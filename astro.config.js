@@ -1,7 +1,7 @@
 import { defineConfig } from 'astro/config';
 
 import solidJs from "@astrojs/solid-js";
-import devtools from 'solid-devtools/vite';
+// import devtools from 'solid-devtools/vite';
 
 // https://astro.build/config
 export default defineConfig({
@@ -9,10 +9,10 @@ export default defineConfig({
   integrations: [solidJs()],
   vite: {
     plugins: [
-      devtools({
-        /* features options - all disabled by default */
-        autoname: true, // e.g. enable autoname
-      }),
+      // devtools({
+      //   /* features options - all disabled by default */
+      //   autoname: true, // e.g. enable autoname
+      // }),
     ],
   }
 });
