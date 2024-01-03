@@ -5,7 +5,7 @@
   flex-direction: column;
   justify-content: center;
   gap: 1rem;
-  background: linear-gradient(to right, #FFA566, #FF1E66);
+  background: linear-gradient(to right, #ffa566, #ff1e66);
   position: relative;
   padding: 1rem;
 }

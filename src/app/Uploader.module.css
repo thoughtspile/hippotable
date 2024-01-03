@@ -35,10 +35,10 @@
 }
 
 .Button.primary {
-  background-color: #66FFB3;
+  background-color: #66ffb3;
 }
 
 .Button:hover {
-  background-color: #FFB366;
+  background-color: #ffb366;
   color: #fff;
 }

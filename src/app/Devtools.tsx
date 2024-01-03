@@ -1,4 +1,4 @@
-import 'solid-devtools';
+import "solid-devtools";
 
 export function Devtools() {
   return null;

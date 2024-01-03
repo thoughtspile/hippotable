@@ -62,5 +62,7 @@
   - export to image
 - share
 - QA & CI / CD
-  - prettier
+  - eslint
+  - stylelint
+  - pre-commit prettier
   - add tests

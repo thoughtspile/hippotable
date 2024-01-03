@@ -1,19 +1,30 @@
-import { For, createEffect } from 'solid-js';
-import styles from './Form.module.css';
+import { For, createEffect } from "solid-js";
+import styles from "./Form.module.css";
 import type { JSX } from "solid-js/jsx-runtime";
 
 type SelectOption = { label: string; value: string };
-export function Select(props: JSX.SelectHTMLAttributes<HTMLSelectElement> & { options: SelectOption[] }) {
+export function Select(
+  props: JSX.SelectHTMLAttributes<HTMLSelectElement> & {
+    options: SelectOption[];
+  },
+) {
   function restProps() {
     const { options, ...rest } = props;
     return rest;
   }
   return (
-    <select {...restProps()} class={`${styles.FormControl} ${props.class || ''}`}>
+    <select
+      {...restProps()}
+      class={`${styles.FormControl} ${props.class || ""}`}
+    >
       <option value=""></option>
-      <For each={props.options}>{op =>
-        <option value={op.value} selected={op.value === props.value}>{op.label}</option>
-      }</For>
+      <For each={props.options}>
+        {(op) => (
+          <option value={op.value} selected={op.value === props.value}>
+            {op.label}
+          </option>
+        )}
+      </For>
     </select>
   );
 }
@@ -27,5 +38,10 @@ export function SegmentedControl(props: JSX.HTMLAttributes<HTMLDivElement>) {
 }
 
 export function FormButton(props: JSX.ButtonHTMLAttributes<HTMLButtonElement>) {
-  return <button {...props} class={`${styles.FormControl} ${styles.FormButton} ${props.class}`} />;
+  return (
+    <button
+      {...props}
+      class={`${styles.FormControl} ${styles.FormButton} ${props.class}`}
+    />
+  );
 }

@@ -1,11 +1,11 @@
-import { defineConfig } from 'astro/config';
+import { defineConfig } from "astro/config";
 
 import solidJs from "@astrojs/solid-js";
 // import devtools from 'solid-devtools/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  base: '/hippotable',
+  base: "/hippotable",
   integrations: [solidJs()],
   vite: {
     plugins: [
@@ -14,5 +14,5 @@ export default defineConfig({
       //   autoname: true, // e.g. enable autoname
       // }),
     ],
-  }
+  },
 });

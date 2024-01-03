@@ -1,4 +1,4 @@
-import styles from './Modal.module.css';
+import styles from "./Modal.module.css";
 import { FaSolidXmark } from "solid-icons/fa";
 import type { JSX } from "solid-js/jsx-runtime";
 

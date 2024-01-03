@@ -14,5 +14,5 @@
 }
 
 .FilterControl *:nth-child(2) {
-  flex: 0 0 2.5rem
+  flex: 0 0 2.5rem;
 }

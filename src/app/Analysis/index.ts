@@ -1,1 +1,1 @@
-export { AnalysisPanel } from './AnalysisPanel';
+export { AnalysisPanel } from "./AnalysisPanel";

@@ -1,4 +1,4 @@
-import { nanoid } from 'nanoid';
+import { nanoid } from "nanoid";
 
 export async function readFile(name: string) {
   const root = await navigator.storage.getDirectory();
@@ -18,23 +18,23 @@ export async function writeFile(file: File) {
 }
 
 function goToTable(src: string) {
-  const selfUrl = new URL('/hippotable/app', location.href);
-  selfUrl.searchParams.set('source', src);
+  const selfUrl = new URL("/hippotable/app", location.href);
+  selfUrl.searchParams.set("source", src);
   location.assign(selfUrl);
 }
 
 export async function persistSource(file: File | string) {
-  if (typeof file === 'string') return goToTable(file);
+  if (typeof file === "string") return goToTable(file);
   const name = await writeFile(file);
   goToTable(`fs:${name}`);
 }
 
 export async function accessSource(): Promise<string | null> {
-  const source = new URLSearchParams(location.search).get('source');
-  if (source?.startsWith('fs:')) {
-    return(await readFile(source.replace('fs:', '')))
+  const source = new URLSearchParams(location.search).get("source");
+  if (source?.startsWith("fs:")) {
+    return await readFile(source.replace("fs:", ""));
   } else if (source) {
-    return(source);
+    return source;
   }
-  return null
+  return null;
 }

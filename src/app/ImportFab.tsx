@@ -4,6 +4,10 @@ import { persistSource } from "./fs";
 
 export function ImportFab() {
   return (
-    <FabUpload onUpload={persistSource} icon={<FaSolidUpload />} accept={".csv,.tsv,text/csv"} />
-  )
+    <FabUpload
+      onUpload={persistSource}
+      icon={<FaSolidUpload />}
+      accept={".csv,.tsv,text/csv"}
+    />
+  );
 }

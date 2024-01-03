@@ -21,7 +21,8 @@ tbody {
   flex-grow: 1;
 }
 
-tr, thead {
+tr,
+thead {
   border-bottom: 1px solid #dadee4;
 }
 
@@ -32,10 +33,11 @@ tr {
 }
 
 tr:hover {
-  box-shadow: 0 0 2px rgba(0,0,0,1);
+  box-shadow: 0 0 2px rgba(0, 0, 0, 1);
 }
 
-td, th {
+td,
+th {
   padding: 0 6px;
   overflow: hidden;
   text-align: left;
