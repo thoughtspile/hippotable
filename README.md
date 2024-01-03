@@ -35,6 +35,8 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 Last but not least, [TanStack virtual](https://github.com/TanStack/virtual) by [Tanner Linsley](https://twitter.com/tannerlinsley) gives us powerful table virtualization — and is one of the few projects that support SolidJS.
 
+[Finos perspective,](https://github.com/finos/perspective) especially its [datagrid component](https://perspective.finos.org/block/?example=editable) was a big influence on hippotable. Perspective has a more integrated design, while hippotable goes with a more modular setup, leveraging other open-source projects under the hood. Hippotable is also designed with multi-layer analysis (aggregate-filter-aggregate) in mind, and should eventually support operations spanning multiple tables.
+
 ## License
 
 [GPLv3 License](./LICENSE)

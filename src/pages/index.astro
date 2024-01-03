@@ -2,6 +2,7 @@
 import { Logo } from '../app/Logo.tsx';
 import { Uploader } from '../app/Uploader';
 import Layout from '../layout.astro';
+import { ImFire, ImLab, ImLock, ImRocket } from 'solid-icons/im'
 ---
 
 <Layout>
@@ -10,21 +11,27 @@ import Layout from '../layout.astro';
     <div class="actions"><Uploader client:load /></div>
     <div class="CardContainer">
       <div class="Card">
-        <h2 class="CardTitle" style="color: #01386a">Fast</h2>
+        <h2 class="CardTitle" style="color: #01386a"><ImFire /> View CSV</h2>
         <p class="CardDescription">
-          Process millions of rows of data in real time. Tested with 100 Mb datasets!
+          Process millions of data points in real time. Tested with 100 Mb datasets.
         </p>
       </div>
       <div class="Card">
-        <h2 class="CardTitle" style="color: #2C8D8A">Secure</h2>
+        <h2 class="CardTitle" style="color: #FFA566"><ImLab /> Analyze</h2>
         <p class="CardDescription">
-            The data stays in your browser. Keep corporations out of your business!
+          Answer hard questions based on data with filters, sorting and aggregation.
         </p>
       </div>
       <div class="Card">
-        <h2 class="CardTitle" style="color: #FF1E66">Simple</h2>
+        <h2 class="CardTitle" style="color: #2C8D8A"><ImLock /> Secure</h2>
         <p class="CardDescription">
-          Upload a CSV and dig into the data right away, no coding required!
+          Your data stays in your browser. Keep corporations out of your business.
+        </p>
+      </div>
+      <div class="Card">
+        <h2 class="CardTitle" style="color: #FF1E66"><ImRocket /> Simple</h2>
+        <p class="CardDescription">
+          Open a file and dig into the data right away, no coding required.
         </p>
       </div>
     </div>
@@ -44,8 +51,8 @@ import Layout from '../layout.astro';
 
 .Landing {
   padding: 4rem;
-  width: max-content;
-  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -61,14 +68,14 @@ import Layout from '../layout.astro';
 }
 
 .CardContainer {
-  display: flex;
+  display: grid;
   flex-wrap: wrap;
   gap: 2rem;
   margin: 0 -2rem;
+  grid-template-columns: repeat(4, 1fr);
 }
 
 .Card {
-  width: 20%;
   padding: 1rem 2rem 1.5rem;
   background-color: #fff;
   border-radius: 1rem;
@@ -79,11 +86,19 @@ import Layout from '../layout.astro';
   margin: 0;
   font-size: 2em;
   font-weight: bold;
+  white-space: nowrap;
 }
 
 .CardDescription {
   margin: 0;
   font-size: 1.25em;
+}
+
+@media (max-width: 1200px) {
+  .CardContainer {
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-flow: row;
+  }
 }
 
 @media (max-width: 600px) {
@@ -93,6 +108,11 @@ import Layout from '../layout.astro';
     justify-content: flex-end;
     padding: 3rem;
     font-size: 0.75rem;
+  }
+  
+  .CardContainer {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
   }
 
   .Card {

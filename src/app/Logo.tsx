@@ -10,7 +10,7 @@ export function Logo() {
         </defs>
           <text fill="url(#rainbow)" x="-1%">HippoTable</text>
       </svg>
-      A better way to analyze data
+      View and analyze data in your browser
     </h1>
   );
 }
