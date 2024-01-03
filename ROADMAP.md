@@ -64,5 +64,4 @@
 - QA & CI / CD
   - eslint
   - stylelint
-  - pre-commit prettier
   - add tests
