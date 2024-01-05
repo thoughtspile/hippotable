@@ -35,8 +35,8 @@
 
 .FormControl:focus,
 .FormButton:focus {
-  outline: none;
-  border-color: #007bff;
+  outline-color: #007bff;
+  outline-width: 1px;
 }
 
 .FormButton {

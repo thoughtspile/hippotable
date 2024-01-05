@@ -107,6 +107,7 @@ function AggregationColumnRow(props: {
   return (
     <SegmentedControl>
       <Input
+        placeholder="Output col"
         value={props.value.name}
         onChange={(e) => patch({ name: e.target.value })}
       />

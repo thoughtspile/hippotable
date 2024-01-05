@@ -9,12 +9,12 @@
 - table
   - custom date / number formatters
   - recompute column widths on table change
+  - view full trimmed column on hover / click
   - Projection
     - Column selection
     - Column reordering
 - UI / UX
   - more descriptive import / export icons
-  - close analysis on esc / click outside
   - fast filter via header
 - Analysis
   - cleanup
