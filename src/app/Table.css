@@ -11,18 +11,22 @@ table {
 }
 
 thead {
-  display: block;
   position: sticky;
   top: 0;
   user-select: none;
+}
+
+thead tr {
+  border: none;
+  background-color: #fff;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
 }
 
 tbody {
   flex-grow: 1;
 }
 
-tr,
-thead {
+tr {
   border-bottom: 1px solid #dadee4;
 }
 
@@ -32,7 +36,7 @@ tr {
   text-overflow: ellipsis;
 }
 
-tr:hover {
+tr:not(thead tr):hover {
   box-shadow: 0 0 2px rgba(0, 0, 0, 1);
 }
 
@@ -47,8 +51,6 @@ th {
 }
 
 th {
-  background-color: #fff;
-  display: inline-block;
   cursor: pointer;
 }
 

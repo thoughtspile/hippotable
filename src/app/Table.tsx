@@ -89,20 +89,27 @@ function TableView(props: TableViewProps) {
   return (
     <table ref={tableRef}>
       <thead>
-        <For each={cols()}>
-          {(col) => (
-            <HeaderCell
-              ref={observeSize}
-              orderBy={props.orderBy}
-              order={props.order}
-              width={colWidths().get(col)}
-              name={col}
-            />
-          )}
-        </For>
+        <tr>
+          <For each={cols()}>
+            {(col) => (
+              <HeaderCell
+                ref={observeSize}
+                orderBy={props.orderBy}
+                order={props.order}
+                width={colWidths().get(col)}
+                name={col}
+              />
+            )}
+          </For>
+        </tr>
       </thead>
       <tbody>
-        <tr style={{ height: `${virtualizer.getVirtualItems()[0].start}px` }}>
+        <tr
+          style={{
+            height: `${virtualizer.getVirtualItems()[0].start}px`,
+            border: "none",
+          }}
+        >
           <For each={cols()}>
             {(col) => (
               <td
