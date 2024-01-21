@@ -1,6 +1,6 @@
-# [🦛 Hippotable](https://blog.thoughtspile.tech/hippotable/)
+# [🦛 Hippotable](https://thoughtspile.github.io/hippotable/)
 
-Hippotable is a simple tool to work with data in the browser. Your data is never sent to a third-party server, protecting your privacy and saving bandwidth. All processing happens in-memory to ensure great performance and real-time feedback. Try it now at [blog.thoughtspile.tech/hippotable](https://blog.thoughtspile.tech/hippotable/)
+Hippotable is a simple tool to work with data in the browser. Your data is never sent to a third-party server, protecting your privacy and saving bandwidth. All processing happens in-memory to ensure great performance and real-time feedback. Try it now at [thoughtspile.github.io/hippotable](https://thoughtspile.github.io/hippotable/)
 
 ![](./docs/hippotable.png)
 
@@ -41,4 +41,4 @@ Last but not least, [TanStack virtual](https://github.com/TanStack/virtual) by [
 
 [GPLv3 License](./LICENSE)
 
-Built in 2023 by [Vladimir Klepov](https://blog.thoughtspile.tech/)
+Built in 2023 by [Vladimir Klepov](https://thoughtspile.github.io/)
