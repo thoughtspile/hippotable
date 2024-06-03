@@ -1,4 +1,4 @@
-import { FaSolidDownload } from "solid-icons/fa";
+import { FaSolidDownload, FaSolidFloppyDisk } from "solid-icons/fa";
 import type ColumnTable from "arquero/dist/types/table/column-table";
 import { Fab } from "./ui/Fab";
 
@@ -12,5 +12,5 @@ export function Export(props: { table: ColumnTable }) {
 
     pom.click();
   }
-  return <Fab onClick={onExport} icon={<FaSolidDownload />} />;
+  return <Fab onClick={onExport} icon={<FaSolidFloppyDisk />} />;
 }
