@@ -39,11 +39,13 @@
     "typescript": "^5.3.3"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^1.6.0",
     "husky": "^8.0.3",
     "lint-staged": "^15.2.0",
     "prettier": "^3.1.1",
     "prettier-plugin-astro": "^0.12.3",
-    "solid-devtools": "^0.28.1"
+    "solid-devtools": "^0.28.1",
+    "vitest": "^1.6.0"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,css,md}": "prettier --write"
