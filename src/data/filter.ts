@@ -105,7 +105,6 @@ export function applyFilters(
       `d['${f.name}']`,
       f.value === "" ? null : f.value,
     );
-    console.log(expr);
     table = table.filter(expr);
   }
   return table;
