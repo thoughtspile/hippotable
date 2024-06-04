@@ -15,6 +15,7 @@ import { Fab, FabContainer } from "./ui/Fab";
 import type { Order } from "../data/order";
 import { createPipeline } from "../data/pipeline";
 import { Export } from "./Export";
+import { ChartsPanel } from "./Charts";
 import { ImportFab } from "./ImportFab";
 import { GitHubLogo } from "./GitHubLogo";
 import { GH_REPO } from "../constants";
@@ -35,6 +36,7 @@ export function Table(props: { table: ColumnTable }) {
       />
       <ImportFab />
       <Export table={pipeline().output} />
+      <ChartsPanel table={pipeline().output} />
       <AnalysisPanel pipeline={pipeline()} update={setPipeline} />
       <FabContainer />
     </>
