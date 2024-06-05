@@ -1,5 +1,6 @@
 import type ColumnTable from "arquero/dist/types/table/column-table";
 import escapeStringRegexp from "escape-string-regexp";
+import { getColumnType, type BaseType } from "./columnConfig";
 
 export type Condition =
   | "eq"
@@ -61,8 +62,6 @@ export function isFilterComplete(f: Partial<Filter>): f is Filter {
   return f.name && f.condition && f.value != null;
 }
 
-type BaseType = "string" | "number" | "boolean";
-
 function getConditions(t: BaseType): Condition[] {
   const base: Condition[] = ["eq", "neq"];
   const ordinal: Condition[] = ["gt", "gte", "lt", "lte"];
@@ -82,11 +81,7 @@ function castValue(v: string, target: BaseType) {
 
 export function toColumnDescriptor(table: ColumnTable) {
   return table.columnNames().map((col): ColumnDescriptor => {
-    const sample = table
-      .params({ col })
-      .filter((v, $) => v[$.col] != null)
-      .get(col, 0);
-    const colType = typeof sample as BaseType;
+    const colType = getColumnType(table, col);
     return {
       name: col,
       availableConditions: getConditions(colType),
