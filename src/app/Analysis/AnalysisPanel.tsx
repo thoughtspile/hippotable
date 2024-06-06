@@ -1,6 +1,5 @@
-import { Index, Show, createSignal } from "solid-js";
-import { FaSolidMagnifyingGlass, FaSolidXmark } from "solid-icons/fa";
-import { Fab } from "../ui/Fab";
+import { Index, Show } from "solid-js";
+import { FaSolidXmark } from "solid-icons/fa";
 import { Modal } from "../ui/Modal";
 import { FilterLayer } from "./FilterLayer";
 import { AggregationLayer } from "./AggregationLayer";
@@ -16,12 +15,13 @@ import type { Pipeline } from "../../data/pipeline";
 import { ComputeLayer } from "./ComputeLayer";
 
 interface AnalysisPanelProps {
+  visible: boolean;
+  onClose: () => void;
   pipeline: Pipeline;
   update: (f: Pipeline) => void;
 }
 
 export function AnalysisPanel(props: AnalysisPanelProps) {
-  const [visible, setVisible] = createSignal(false);
   const staging = () => props.pipeline.flow.filter((s) => s.mode !== "order");
   function addStep(mode: FlowStep["mode"]) {
     setStaging(flowActions.addStep(staging(), mode));
@@ -31,17 +31,8 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
   }
 
   return (
-    <Show
-      when={visible()}
-      fallback={
-        <Fab
-          primary
-          onClick={() => setVisible(true)}
-          icon={<FaSolidMagnifyingGlass />}
-        />
-      }
-    >
-      <Modal close={() => setVisible(false)}>
+    <Show when={props.visible}>
+      <Modal close={props.onClose}>
         <div class={styles.Form}>
           <Index each={staging().filter((s) => s.mode !== "order")}>
             {(s, i) => (

@@ -20,37 +20,14 @@ import { ImportFab } from "./ImportFab";
 import { GitHubLogo } from "./GitHubLogo";
 import { GH_REPO } from "../constants";
 
-export function Table(props: { table: ColumnTable }) {
-  const [pipeline, setPipeline] = createSignal(createPipeline(props.table));
-
-  return (
-    <>
-      <TableView
-        table={pipeline().output}
-        orderBy={(col) => setPipeline(pipeline().orderBy(col))}
-        order={pipeline().order}
-      />
-      <Fab
-        icon={<GitHubLogo />}
-        onClick={() => window.open(GH_REPO, "_blank")}
-      />
-      <ImportFab />
-      <Export table={pipeline().output} />
-      <ChartsPanel table={pipeline().output} />
-      <AnalysisPanel pipeline={pipeline()} update={setPipeline} />
-      <FabContainer />
-    </>
-  );
-}
-
 const rowHeight = 19;
 
-type TableViewProps = {
+type TableProps = {
   table: ColumnTable;
   order: Order;
   orderBy: (c: string) => void;
 };
-function TableView(props: TableViewProps) {
+export function Table(props: TableProps) {
   const [colWidths, setColWidths] = createSignal(new Map<string, number>());
   const cols = () => props.table.columnNames();
 
