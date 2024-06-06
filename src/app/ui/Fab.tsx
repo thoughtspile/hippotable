@@ -34,5 +34,9 @@ export function FabUpload(props: {
 }
 
 export function FabContainer(props: { children: JSX.Element[] }) {
-  return <div class={styles.FabContainer} {...props} />;
+  return (
+    <div class={styles.FabHolder}>
+      <div class={styles.FabContainer} {...props} />
+    </div>
+  );
 }

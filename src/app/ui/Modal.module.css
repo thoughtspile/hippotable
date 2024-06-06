@@ -1,10 +1,8 @@
 .Modal {
-  position: fixed;
-  top: 0;
-  right: 0;
   height: 100vh;
   box-sizing: border-box;
   width: 360px;
+  flex: 0 0 360px;
   max-width: calc(100% - 3rem);
   background-color: #f4f4f4;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);

@@ -23,10 +23,15 @@
   filter: brightness(1.2);
 }
 
+.FabHolder {
+  width: 0;
+  position: relative;
+}
+
 .FabContainer {
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;

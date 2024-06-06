@@ -1,4 +1,4 @@
-import { createSignal } from "solid-js";
+import { createSignal, onCleanup, onMount } from "solid-js";
 import "./Table.css";
 import type ColumnTable from "arquero/dist/types/table/column-table";
 import { AnalysisPanel } from "./Analysis";
@@ -11,6 +11,7 @@ import { GitHubLogo } from "./GitHubLogo";
 import { GH_REPO } from "../constants";
 import { Table } from "./Table";
 import { FaSolidChartSimple, FaSolidMagnifyingGlass } from "solid-icons/fa";
+import styles from "./Workspace.module.css";
 
 type Modals = "analysis" | "charts";
 
@@ -24,8 +25,22 @@ export function Workspace(props: { table: ColumnTable }) {
     setModalStack(modalStack().filter((t) => t !== m));
   const [pipeline, setPipeline] = createSignal(createPipeline(props.table));
 
+  function onKey(e: KeyboardEvent) {
+    const modalCount = modalStack().length;
+    e.code === "Escape" &&
+      modalCount &&
+      closeModal(modalStack()[modalCount - 1]);
+  }
+
+  onMount(() => {
+    window.addEventListener("keydown", onKey);
+  });
+  onCleanup(() => {
+    window.removeEventListener("keydown", onKey);
+  });
+
   return (
-    <>
+    <div class={styles.Workspace}>
       <Table
         table={pipeline().output}
         orderBy={(col) => setPipeline(pipeline().orderBy(col))}
@@ -59,6 +74,6 @@ export function Workspace(props: { table: ColumnTable }) {
         visible={modalStack().includes("charts")}
         onClose={() => closeModal("charts")}
       />
-    </>
+    </div>
   );
 }

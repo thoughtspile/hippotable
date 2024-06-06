@@ -18,12 +18,14 @@ interface ChartProps {
 export function ChartItem(props: ChartProps) {
   const ready = () => props.config.type && props.config.axes.every((a) => !!a);
   let canvas: HTMLCanvasElement;
+  let chart: Chart<any> | undefined;
   createEffect(() => {
     if (!ready()) return;
     const [labels, ...datasets] = props.config.axes.map((a) =>
       Array.from(props.table.values(a) as any),
     );
-    new Chart(canvas, {
+    chart && chart.destroy();
+    chart = new Chart(canvas, {
       type: props.config.type,
       data: {
         labels,
