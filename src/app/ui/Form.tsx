@@ -6,6 +6,7 @@ type SelectOption = { label: string; value: string };
 export function Select(
   props: JSX.SelectHTMLAttributes<HTMLSelectElement> & {
     options: SelectOption[];
+    placeholder?: string;
   },
 ) {
   function restProps() {
@@ -17,7 +18,7 @@ export function Select(
       {...restProps()}
       class={`${styles.FormControl} ${props.class || ""}`}
     >
-      <option value=""></option>
+      <option value="">{props.placeholder}</option>
       <For each={props.options}>
         {(op) => (
           <option value={op.value} selected={op.value === props.value}>

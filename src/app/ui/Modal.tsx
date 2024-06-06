@@ -3,7 +3,11 @@ import { FaSolidXmark } from "solid-icons/fa";
 import { onCleanup, onMount } from "solid-js";
 import type { JSX } from "solid-js/jsx-runtime";
 
-export function Modal(props: { children: JSX.Element; close: () => void }) {
+export function Modal(props: {
+  children: JSX.Element;
+  close: () => void;
+  class?: string;
+}) {
   let root: HTMLDivElement;
   const close = () => props.close();
   function onClickOutside(e: MouseEvent) {
@@ -27,7 +31,9 @@ export function Modal(props: { children: JSX.Element; close: () => void }) {
       <button type="button" onClick={close} class={styles.Modal__close}>
         <FaSolidXmark />
       </button>
-      {props.children}
+      <div class={`${styles.ModalContent} ${props.class || ""}`}>
+        {props.children}
+      </div>
     </div>
   );
 }

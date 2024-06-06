@@ -1,6 +1,5 @@
 .Modal {
   position: fixed;
-  padding: 1rem;
   top: 0;
   right: 0;
   height: 100vh;
@@ -10,6 +9,12 @@
   background-color: #f4f4f4;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
   z-index: 2;
+}
+
+.ModalContent {
+  padding: 1rem;
+  max-height: 100vh;
+  overflow-y: scroll;
 }
 
 .Modal__close {
