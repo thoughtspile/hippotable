@@ -1,8 +1,5 @@
 import type { JSX } from "solid-js/jsx-runtime";
 import styles from "./Fab.module.css";
-import { Portal } from "solid-js/web";
-
-const containerId = "fab-container";
 
 export function Fab(props: {
   onClick: () => void;
@@ -10,14 +7,12 @@ export function Fab(props: {
   primary?: boolean;
 }) {
   return (
-    <Portal mount={document.getElementById(containerId)}>
-      <button
-        onClick={props.onClick}
-        classList={{ [styles.Fab]: true, [styles.primary]: props.primary }}
-      >
-        {props.icon}
-      </button>
-    </Portal>
+    <button
+      onClick={props.onClick}
+      classList={{ [styles.Fab]: true, [styles.primary]: props.primary }}
+    >
+      {props.icon}
+    </button>
   );
 }
 
@@ -27,19 +22,21 @@ export function FabUpload(props: {
   accept: string;
 }) {
   return (
-    <Portal mount={document.getElementById(containerId)}>
-      <label class={styles.Fab}>
-        {props.icon}
-        <input
-          type="file"
-          accept={props.accept}
-          onInput={(e) => props.onUpload(e.currentTarget.files[0])}
-        />
-      </label>
-    </Portal>
+    <label class={styles.Fab}>
+      {props.icon}
+      <input
+        type="file"
+        accept={props.accept}
+        onInput={(e) => props.onUpload(e.currentTarget.files[0])}
+      />
+    </label>
   );
 }
 
-export function FabContainer() {
-  return <div class={styles.FabContainer} id={containerId} />;
+export function FabContainer(props: { children: JSX.Element[] }) {
+  return (
+    <div class={styles.FabHolder}>
+      <div class={styles.FabContainer} {...props} />
+    </div>
+  );
 }

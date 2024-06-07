@@ -1,6 +1,7 @@
 table {
   table-layout: fixed;
   display: flex;
+  flex-grow: 1;
   height: 100vh;
   flex-direction: column;
   font-family: monospace;

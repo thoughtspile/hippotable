@@ -1,8 +1,8 @@
 import { Show, createResource, createSignal, onMount } from "solid-js";
 import { parseCsv } from "../data/data";
-import { Table } from "./Table";
 import { Welcome } from "./Welcome";
 import { accessSource, persistSource } from "./fs";
+import { Workspace } from "./Workspace";
 
 export function Dashboard() {
   const [initializing, setInitializing] = createSignal(true);
@@ -22,7 +22,7 @@ export function Dashboard() {
       when={table()}
       fallback={<Welcome onSubmit={persistSource} loading={loading()} />}
     >
-      <Table table={table()} />
+      <Workspace table={table()} />
     </Show>
   );
 }

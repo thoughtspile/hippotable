@@ -1,36 +1,59 @@
 .Modal {
-  position: fixed;
-  padding: 1rem;
-  top: 0;
-  right: 0;
   height: 100vh;
   box-sizing: border-box;
   width: 360px;
+  flex: 0 0 360px;
   max-width: calc(100% - 3rem);
   background-color: #f4f4f4;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
   z-index: 2;
+  display: flex;
+  flex-direction: column;
+}
+
+.Modal__header {
+  flex: 0 0;
+  padding: 1rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.Modal__content {
+  padding: 0 1rem 1rem;
+  flex-grow: 1;
+  overflow-y: scroll;
 }
 
 .Modal__close {
-  position: absolute;
-  top: 0.5rem;
-  left: -2.5rem;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: white;
   transition: opacity 300ms ease;
-  color: white;
+  color: inherit;
   border: none;
   border-radius: 50%;
-  width: 2rem;
-  height: 2rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: -0.25rem;
   cursor: pointer;
   display: flex;
-  font-size: 1rem;
+  font-size: 0.75rem;
   align-items: center;
   justify-content: center;
-  opacity: 0.6;
 }
 
-.FilterPanel__close:hover {
-  opacity: 1;
+.Modal__paranja {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .Modal {
+    position: absolute;
+    right: 0;
+  }
+  .Modal__paranja {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+  }
 }
