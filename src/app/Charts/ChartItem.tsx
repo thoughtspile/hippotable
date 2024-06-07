@@ -1,13 +1,14 @@
 import { Index, Show, createEffect } from "solid-js";
 import type ColumnTable from "arquero/dist/types/table/column-table";
 import { SegmentedControl, Select } from "../ui/Form";
-import Chart, { type ChartType } from "chart.js/auto";
+import Chart, { type ChartType, type ScaleChartOptions } from "chart.js/auto";
 import {
   getAxisOptions,
   type ChartConfig,
   chartTypes,
   chartTypeAxes,
 } from "./chartConfig";
+import { getColumnType } from "../../data/columnConfig";
 
 interface ChartProps {
   table: ColumnTable;
@@ -21,17 +22,31 @@ export function ChartItem(props: ChartProps) {
   let chart: Chart<any> | undefined;
   createEffect(() => {
     if (!ready()) return;
+    const numericLabel =
+      getColumnType(props.table, props.config.axes[0]) === "number";
+    const table = numericLabel
+      ? props.table.orderby(props.config.axes[0])
+      : props.table;
     const [labels, ...datasets] = props.config.axes.map((a) =>
-      Array.from(props.table.values(a) as any),
+      Array.from(table.values(a) as any),
     );
+    const scales: ScaleChartOptions<any>["scales"] = numericLabel
+      ? {
+          x: { type: "linear", min: labels[0], max: labels[labels.length - 1] },
+        }
+      : {};
     chart && chart.destroy();
     chart = new Chart(canvas, {
       type: props.config.type,
       data: {
         labels,
-        datasets: datasets.map((data) => ({ data })),
+        datasets: datasets.map((data) => ({
+          data,
+          pointStyle: props.config.type === "line" ? false : "circle",
+        })),
       },
       options: {
+        scales,
         plugins: {
           legend: {
             display: false,
@@ -41,7 +56,7 @@ export function ChartItem(props: ChartProps) {
     });
   });
   function setType(t: ChartType) {
-    const axes = Array.from({ length: chartTypeAxes[t].length }).map(
+    const axes = Array.from({ length: chartTypeAxes[t]?.length ?? 0 }).map(
       () => null,
     );
     props.onChange({ ...props.config, type: t, axes });
