@@ -17,12 +17,11 @@ type Modals = "analysis" | "charts";
 
 export function Workspace(props: { table: ColumnTable }) {
   const [modalStack, setModalStack] = createSignal<Modals[]>([]);
-  const openModal = (m: Modals) =>
-    setModalStack(
-      modalStack().includes(m) ? modalStack() : [...modalStack(), m],
-    );
+  const hasModal = (m: Modals) => modalStack().includes(m);
   const closeModal = (m: Modals) =>
     setModalStack(modalStack().filter((t) => t !== m));
+  const toggleModal = (m: Modals) =>
+    hasModal(m) ? closeModal(m) : setModalStack([...modalStack(), m]);
   const [pipeline, setPipeline] = createSignal(createPipeline(props.table));
 
   function onKey(e: KeyboardEvent) {
@@ -54,12 +53,12 @@ export function Workspace(props: { table: ColumnTable }) {
         <ImportFab />
         <Export table={pipeline().output} />
         <Fab
-          onClick={() => openModal("charts")}
+          onClick={() => toggleModal("charts")}
           icon={<FaSolidChartSimple />}
         />
         <Fab
           primary
-          onClick={() => openModal("analysis")}
+          onClick={() => toggleModal("analysis")}
           icon={<FaSolidMagnifyingGlass />}
         />
       </FabContainer>
@@ -67,11 +66,11 @@ export function Workspace(props: { table: ColumnTable }) {
         pipeline={pipeline()}
         update={setPipeline}
         onClose={() => closeModal("analysis")}
-        visible={modalStack().includes("analysis")}
+        visible={hasModal("analysis")}
       />
       <ChartsPanel
         table={pipeline().output}
-        visible={modalStack().includes("charts")}
+        visible={hasModal("charts")}
         onClose={() => closeModal("charts")}
       />
     </div>
