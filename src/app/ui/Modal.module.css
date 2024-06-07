@@ -41,6 +41,19 @@
   justify-content: center;
 }
 
-.FilterPanel__close:hover {
-  opacity: 1;
+.Modal__paranja {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .Modal {
+    position: absolute;
+    right: 0;
+  }
+  .Modal__paranja {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+  }
 }

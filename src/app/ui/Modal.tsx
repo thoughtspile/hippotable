@@ -8,20 +8,22 @@ export function Modal(props: {
   class?: string;
   title: string;
 }) {
-  let root: HTMLDivElement;
   const close = () => props.close();
 
   return (
-    <div ref={root} class={styles.Modal}>
-      <div class={styles.Modal__header}>
-        <button type="button" onClick={close} class={styles.Modal__close}>
-          <FaSolidXmark />
-        </button>
-        {props.title}
+    <>
+      <div class={styles.Modal__paranja} onClick={close} />
+      <div class={styles.Modal}>
+        <div class={styles.Modal__header}>
+          <button type="button" onClick={close} class={styles.Modal__close}>
+            <FaSolidXmark />
+          </button>
+          {props.title}
+        </div>
+        <div class={`${styles.Modal__content} ${props.class || ""}`}>
+          {props.children}
+        </div>
       </div>
-      <div class={`${styles.Modal__content} ${props.class || ""}`}>
-        {props.children}
-      </div>
-    </div>
+    </>
   );
 }
