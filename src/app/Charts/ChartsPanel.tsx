@@ -24,7 +24,7 @@ export function ChartsPanel(props: ChartsPanelProps) {
 
   return (
     <Show when={props.visible}>
-      <Modal close={props.onClose} class={styles.ChartsPanel}>
+      <Modal close={props.onClose} class={styles.ChartsPanel} title="Charts">
         <For each={charts()}>
           {(config) => (
             <ChartItem

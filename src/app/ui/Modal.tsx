@@ -6,16 +6,20 @@ export function Modal(props: {
   children: JSX.Element;
   close: () => void;
   class?: string;
+  title: string;
 }) {
   let root: HTMLDivElement;
   const close = () => props.close();
 
   return (
     <div ref={root} class={styles.Modal}>
-      <button type="button" onClick={close} class={styles.Modal__close}>
-        <FaSolidXmark />
-      </button>
-      <div class={`${styles.ModalContent} ${props.class || ""}`}>
+      <div class={styles.Modal__header}>
+        <button type="button" onClick={close} class={styles.Modal__close}>
+          <FaSolidXmark />
+        </button>
+        {props.title}
+      </div>
+      <div class={`${styles.Modal__content} ${props.class || ""}`}>
         {props.children}
       </div>
     </div>

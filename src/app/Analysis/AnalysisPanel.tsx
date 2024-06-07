@@ -32,7 +32,7 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
 
   return (
     <Show when={props.visible}>
-      <Modal close={props.onClose}>
+      <Modal close={props.onClose} title="Data Analysis">
         <div class={styles.Form}>
           <Index each={staging().filter((s) => s.mode !== "order")}>
             {(s, i) => (
