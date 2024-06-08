@@ -7,6 +7,7 @@ import {
   type ChartConfig,
   chartTypes,
   chartTypeAxes,
+  isChartReady,
 } from "./chartConfig";
 import { getColumnType } from "../../data/columnConfig";
 
@@ -17,11 +18,10 @@ interface ChartProps {
 }
 
 export function ChartItem(props: ChartProps) {
-  const ready = () => props.config.type && props.config.axes.every((a) => !!a);
   let canvas: HTMLCanvasElement;
   let chart: Chart<any> | undefined;
   createEffect(() => {
-    if (!ready()) return;
+    if (!isChartReady(props.config)) return;
     const numericLabel =
       getColumnType(props.table, props.config.axes[0]) === "number";
     const table = numericLabel
@@ -87,7 +87,7 @@ export function ChartItem(props: ChartProps) {
           )}
         </Index>
       </SegmentedControl>
-      <Show when={ready()}>
+      <Show when={isChartReady(props.config)}>
         <canvas ref={canvas} />
       </Show>
     </div>

@@ -1,4 +1,4 @@
-import { createSignal, onCleanup, onMount } from "solid-js";
+import { createEffect, createSignal, onCleanup, onMount } from "solid-js";
 import "./Table.css";
 import type ColumnTable from "arquero/dist/types/table/column-table";
 import { AnalysisPanel } from "./Analysis";
@@ -12,11 +12,21 @@ import { GH_REPO } from "../constants";
 import { Table } from "./Table";
 import { FaSolidChartSimple, FaSolidMagnifyingGlass } from "solid-icons/fa";
 import styles from "./Workspace.module.css";
+import { createUrlPersistedSignal } from "./helpers/createUrlPersistedSignal";
 
 type Modals = "analysis" | "charts";
 
 export function Workspace(props: { table: ColumnTable }) {
-  const [modalStack, setModalStack] = createSignal<Modals[]>([]);
+  const [modalStack, setModalStack] = createUrlPersistedSignal<Modals[]>({
+    param: "modals",
+    parse: (sp) =>
+      sp
+        ? sp
+            .split(",")
+            .filter((m): m is Modals => m === "analysis" || m === "charts")
+        : [],
+    serialize: (modals) => (modals.length ? modals.join(",") : null),
+  });
   const hasModal = (m: Modals) => modalStack().includes(m);
   const closeModal = (m: Modals) =>
     setModalStack(modalStack().filter((t) => t !== m));

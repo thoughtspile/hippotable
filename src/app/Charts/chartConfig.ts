@@ -2,6 +2,7 @@ import type { ChartType } from "chart.js";
 import { nanoid } from "nanoid";
 import { getColumnType, type BaseType } from "../../data/columnConfig";
 import type ColumnTable from "arquero/dist/types/table/column-table";
+import { array, enums, object, string } from "banditypes";
 
 export interface ChartConfig {
   id: string;
@@ -11,6 +12,20 @@ export interface ChartConfig {
 
 const anyType = new Set(["string", "boolean", "number"] as const);
 const numericType = new Set(["number"] as const);
+export const parseChartConfig = object<ChartConfig>({
+  id: string().or(nanoid),
+  type: enums([
+    "bar",
+    "line",
+    "scatter",
+    "bubble",
+    "pie",
+    "doughnut",
+    "polarArea",
+    "radar",
+  ] as const),
+  axes: array(string()),
+});
 
 export const chartTypeAxes: Record<ChartType, Set<BaseType>[]> = {
   bar: [anyType, numericType],
@@ -46,3 +61,6 @@ export function getAxisOptions(
     return colTypes.filter((c) => allowedTypes.has(c.type)).map((c) => c.name);
   });
 }
+
+export const isChartReady = (c: ChartConfig) =>
+  c.type && c.axes.every((a) => !!a);
