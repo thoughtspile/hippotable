@@ -1,9 +1,15 @@
-import { createEffect, createSignal, onCleanup, onMount } from "solid-js";
+import { createMemo, createSignal, onCleanup, onMount } from "solid-js";
 import "./Table.css";
 import type ColumnTable from "arquero/dist/types/table/column-table";
 import { AnalysisPanel } from "./Analysis";
 import { Fab, FabContainer } from "./ui/Fab";
-import { createPipeline } from "../data/pipeline";
+import {
+  computeFlow,
+  getOrder,
+  type Flow,
+  flowActions,
+  parseFlow,
+} from "../data/pipeline";
 import { Export } from "./Export";
 import { ChartsPanel } from "./Charts";
 import { ImportFab } from "./ImportFab";
@@ -32,7 +38,22 @@ export function Workspace(props: { table: ColumnTable }) {
     setModalStack(modalStack().filter((t) => t !== m));
   const toggleModal = (m: Modals) =>
     hasModal(m) ? closeModal(m) : setModalStack([...modalStack(), m]);
-  const [pipeline, setPipeline] = createSignal(createPipeline(props.table));
+  const [flow, setFlow] = createUrlPersistedSignal<Flow>({
+    param: "flow",
+    serialize: (flow) => {
+      const safeFlow = parseFlow(flow);
+      return flow.length ? btoa(JSON.stringify(safeFlow)) : null;
+    },
+    parse: (raw) => {
+      try {
+        return parseFlow(JSON.parse(atob(raw)));
+      } catch {
+        return [];
+      }
+    },
+  });
+  const computedFlow = createMemo(() => computeFlow(props.table, flow()));
+  const order = () => getOrder(flow());
 
   function onKey(e: KeyboardEvent) {
     const modalCount = modalStack().length;
@@ -51,9 +72,9 @@ export function Workspace(props: { table: ColumnTable }) {
   return (
     <div class={styles.Workspace}>
       <Table
-        table={pipeline().output}
-        orderBy={(col) => setPipeline(pipeline().orderBy(col))}
-        order={pipeline().order}
+        table={computedFlow().output}
+        orderBy={(col) => setFlow(flowActions.orderBy(flow(), col))}
+        order={order()}
       />
       <FabContainer>
         <Fab
@@ -61,7 +82,7 @@ export function Workspace(props: { table: ColumnTable }) {
           onClick={() => window.open(GH_REPO, "_blank")}
         />
         <ImportFab />
-        <Export table={pipeline().output} />
+        <Export table={computedFlow().output} />
         <Fab
           onClick={() => toggleModal("charts")}
           icon={<FaSolidChartSimple />}
@@ -73,13 +94,13 @@ export function Workspace(props: { table: ColumnTable }) {
         />
       </FabContainer>
       <AnalysisPanel
-        pipeline={pipeline()}
-        update={setPipeline}
+        flow={computedFlow().flow}
+        update={setFlow}
         onClose={() => closeModal("analysis")}
         visible={hasModal("analysis")}
       />
       <ChartsPanel
-        table={pipeline().output}
+        table={computedFlow().output}
         visible={hasModal("charts")}
         onClose={() => closeModal("charts")}
       />

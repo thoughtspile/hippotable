@@ -1,18 +1,27 @@
 import type ColumnTable from "arquero/dist/types/table/column-table";
 import escapeStringRegexp from "escape-string-regexp";
 import { getColumnType, type BaseType } from "./columnConfig";
+import { enums, object, string } from "banditypes";
 
-export type Condition =
-  | "eq"
-  | "neq"
-  | "lt"
-  | "lte"
-  | "gt"
-  | "gte"
-  | "startswith"
-  | "endswith"
-  | "contains"
-  | "matches";
+const conditions = [
+  "eq",
+  "neq",
+  "lt",
+  "lte",
+  "gt",
+  "gte",
+  "startswith",
+  "endswith",
+  "contains",
+  "matches",
+] as const;
+export type Condition = (typeof conditions)[number];
+
+export const parseFilter = object<Filter>({
+  name: string(),
+  value: string(),
+  condition: enums(conditions),
+});
 
 export interface Filter {
   name?: string;

@@ -1,30 +1,15 @@
-import {
-  For,
-  Show,
-  createMemo,
-  createSignal,
-  onCleanup,
-  onMount,
-} from "solid-js";
+import { For, Show, createMemo, createSignal, onCleanup } from "solid-js";
 import "./Table.css";
 import type ColumnTable from "arquero/dist/types/table/column-table";
 import { FaSolidSortDown, FaSolidSortUp } from "solid-icons/fa";
 import { createVirtualizer } from "@tanstack/solid-virtual";
-import { AnalysisPanel } from "./Analysis";
-import { Fab, FabContainer } from "./ui/Fab";
 import type { Order } from "../data/order";
-import { createPipeline } from "../data/pipeline";
-import { Export } from "./Export";
-import { ChartsPanel } from "./Charts";
-import { ImportFab } from "./ImportFab";
-import { GitHubLogo } from "./GitHubLogo";
-import { GH_REPO } from "../constants";
 
 const rowHeight = 19;
 
 type TableProps = {
   table: ColumnTable;
-  order: Order;
+  order?: Order | null;
   orderBy: (c: string) => void;
 };
 export function Table(props: TableProps) {
@@ -128,14 +113,14 @@ function Row(props: RowProps) {
 }
 
 interface HeaderCellProps {
-  order: Order;
+  order?: Order | null;
   name: string;
   orderBy: (c: string) => void;
   width: number;
   ref: (e: HTMLElement) => void;
 }
 function HeaderCell(props: HeaderCellProps) {
-  const dir = () => (props.order.col === props.name ? props.order.dir : null);
+  const dir = () => (props.order?.col === props.name ? props.order?.dir : null);
   return (
     <th
       ref={props.ref}
