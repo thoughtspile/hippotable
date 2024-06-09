@@ -1,13 +1,14 @@
 import { Index, Show, createEffect } from "solid-js";
 import type ColumnTable from "arquero/dist/types/table/column-table";
 import { SegmentedControl, Select } from "../ui/Form";
-import Chart, { type ChartType, type ScaleChartOptions } from "chart.js/auto";
+import Chart, { type ScaleChartOptions } from "chart.js/auto";
 import {
   getAxisOptions,
   type ChartConfig,
   chartTypes,
   chartTypeAxes,
   isChartReady,
+  type ChartType,
 } from "./chartConfig";
 import { getColumnType } from "../../data/columnConfig";
 

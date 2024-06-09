@@ -13,7 +13,6 @@ import {
 import { FormButton, SegmentedControl } from "../ui/Form";
 import styles from "./AnalysisPanel.module.css";
 import { ComputeLayer } from "./ComputeLayer";
-import type ColumnTable from "arquero/dist/types/table/column-table";
 
 interface AnalysisPanelProps {
   visible: boolean;
@@ -35,7 +34,7 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
             {(s, i) => (
               <Layer
                 step={s()}
-                update={({ input, ...step }) =>
+                update={(step) =>
                   props.update(flowActions.changeStep(props.flow, i, step))
                 }
                 remove={() =>

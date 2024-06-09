@@ -1,7 +1,7 @@
 import type ColumnTable from "arquero/dist/types/table/column-table";
 import escapeStringRegexp from "escape-string-regexp";
 import { getColumnType, type BaseType } from "./columnConfig";
-import { enums, object, string } from "banditypes";
+import { enums, object, string, unknown } from "banditypes";
 
 const conditions = [
   "eq",
@@ -19,7 +19,7 @@ export type Condition = (typeof conditions)[number];
 
 export const parseFilter = object<Filter>({
   name: string(),
-  value: string(),
+  value: unknown(),
   condition: enums(conditions),
 });
 

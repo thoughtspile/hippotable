@@ -4,7 +4,7 @@ import { getColumnType, type BaseType } from "../../data/columnConfig";
 import type ColumnTable from "arquero/dist/types/table/column-table";
 import { array, enums, object, string } from "banditypes";
 
-type ChartType = Exclude<NativeChartType, "pie" | "polarArea">;
+export type ChartType = Exclude<NativeChartType, "pie" | "polarArea">;
 export interface ChartConfig {
   id: string;
   type: ChartType | null;
