@@ -1,4 +1,4 @@
-import { createMemo, createSignal, onCleanup, onMount } from "solid-js";
+import { createMemo, onCleanup, onMount } from "solid-js";
 import "./Table.css";
 import type ColumnTable from "arquero/dist/types/table/column-table";
 import { AnalysisPanel } from "./Analysis";
@@ -20,9 +20,9 @@ import { FaSolidChartSimple, FaSolidMagnifyingGlass } from "solid-icons/fa";
 import styles from "./Workspace.module.css";
 import { createUrlPersistedSignal } from "./helpers/createUrlPersistedSignal";
 
-type Modals = "analysis" | "charts";
+type WorkspaceProps = { table: ColumnTable };
 
-export function Workspace(props: { table: ColumnTable }) {
+export function Workspace(props: WorkspaceProps) {
   const modals = createModalsStore();
   const flow = createFlowStore();
   const computedFlow = createMemo(() => computeFlow(props.table, flow.value()));
@@ -66,6 +66,7 @@ export function Workspace(props: { table: ColumnTable }) {
   );
 }
 
+type Modals = "analysis" | "charts";
 function createModalsStore() {
   const [modalStack, setModalStack] = createUrlPersistedSignal<Modals[]>({
     param: "modals",

@@ -1,12 +1,17 @@
 import styles from "./Uploader.module.css";
-import { FaSolidEye, FaSolidUpload } from "solid-icons/fa";
+import { FaSolidCross, FaSolidEye, FaSolidUpload } from "solid-icons/fa";
 import { persistSource } from "./fs";
 import { GH_REPO, SAMPLE_URL } from "../constants";
 import { GitHubLogo } from "./GitHubLogo";
 import { Show, createSignal } from "solid-js";
 import { Spinner } from "./ui/Spinner";
 
-export function Uploader() {
+type UploaderProps = {
+  hideGithub?: boolean;
+  onReset?: () => void;
+};
+
+export function Uploader(props: UploaderProps) {
   const [isPersisting, setPersisting] = createSignal(false);
   function onOpen(f: File) {
     setPersisting(true);
@@ -32,10 +37,18 @@ export function Uploader() {
         <FaSolidEye />
         &nbsp;View demo
       </button>
-      <a href={GH_REPO} target="_blank" class={styles.Button}>
-        <GitHubLogo />
-        &nbsp;Star on GitHub
-      </a>
+      {!props.hideGithub && (
+        <a href={GH_REPO} target="_blank" class={styles.Button}>
+          <GitHubLogo />
+          &nbsp;Star on GitHub
+        </a>
+      )}
+      {props.onReset && (
+        <button class={styles.Button} onClick={props.onReset}>
+          <FaSolidCross />
+          &nbsp;Reset pipeline
+        </button>
+      )}
     </div>
   );
 }
