@@ -23,6 +23,50 @@ import { createUrlPersistedSignal } from "./helpers/createUrlPersistedSignal";
 type Modals = "analysis" | "charts";
 
 export function Workspace(props: { table: ColumnTable }) {
+  const modals = createModalsStore();
+  const flow = createFlowStore();
+  const computedFlow = createMemo(() => computeFlow(props.table, flow.value()));
+
+  return (
+    <div class={styles.Workspace}>
+      <Table
+        table={computedFlow().output}
+        orderBy={flow.orderBy}
+        order={flow.order()}
+      />
+      <FabContainer>
+        <Fab
+          icon={<GitHubLogo />}
+          onClick={() => window.open(GH_REPO, "_blank")}
+        />
+        <ImportFab />
+        <Export table={computedFlow().output} />
+        <Fab
+          onClick={() => modals.toggle("charts")}
+          icon={<FaSolidChartSimple />}
+        />
+        <Fab
+          primary
+          onClick={() => modals.toggle("analysis")}
+          icon={<FaSolidMagnifyingGlass />}
+        />
+      </FabContainer>
+      <AnalysisPanel
+        flow={computedFlow().flow}
+        update={flow.set}
+        onClose={() => modals.close("analysis")}
+        visible={modals.has("analysis")}
+      />
+      <ChartsPanel
+        table={computedFlow().output}
+        visible={modals.has("charts")}
+        onClose={() => modals.close("charts")}
+      />
+    </div>
+  );
+}
+
+function createModalsStore() {
   const [modalStack, setModalStack] = createUrlPersistedSignal<Modals[]>({
     param: "modals",
     parse: (sp) =>
@@ -33,11 +77,30 @@ export function Workspace(props: { table: ColumnTable }) {
         : [],
     serialize: (modals) => (modals.length ? modals.join(",") : null),
   });
-  const hasModal = (m: Modals) => modalStack().includes(m);
-  const closeModal = (m: Modals) =>
+  const has = (m: Modals) => modalStack().includes(m);
+  const close = (m: Modals) =>
     setModalStack(modalStack().filter((t) => t !== m));
-  const toggleModal = (m: Modals) =>
-    hasModal(m) ? closeModal(m) : setModalStack([...modalStack(), m]);
+  const toggle = (m: Modals) =>
+    has(m) ? close(m) : setModalStack([...modalStack(), m]);
+  const pop = () => {
+    const modalCount = modalStack().length;
+    modalCount && close(modalStack()[modalCount - 1]);
+  };
+
+  function onKey(e: KeyboardEvent) {
+    e.code === "Escape" && pop();
+  }
+  onMount(() => {
+    window.addEventListener("keydown", onKey);
+  });
+  onCleanup(() => {
+    window.removeEventListener("keydown", onKey);
+  });
+
+  return { has, close, toggle };
+}
+
+function createFlowStore() {
   const [flow, setFlow] = createUrlPersistedSignal<Flow>({
     param: "flow",
     serialize: (flow) => {
@@ -52,58 +115,7 @@ export function Workspace(props: { table: ColumnTable }) {
       }
     },
   });
-  const computedFlow = createMemo(() => computeFlow(props.table, flow()));
   const order = () => getOrder(flow());
-
-  function onKey(e: KeyboardEvent) {
-    const modalCount = modalStack().length;
-    e.code === "Escape" &&
-      modalCount &&
-      closeModal(modalStack()[modalCount - 1]);
-  }
-
-  onMount(() => {
-    window.addEventListener("keydown", onKey);
-  });
-  onCleanup(() => {
-    window.removeEventListener("keydown", onKey);
-  });
-
-  return (
-    <div class={styles.Workspace}>
-      <Table
-        table={computedFlow().output}
-        orderBy={(col) => setFlow(flowActions.orderBy(flow(), col))}
-        order={order()}
-      />
-      <FabContainer>
-        <Fab
-          icon={<GitHubLogo />}
-          onClick={() => window.open(GH_REPO, "_blank")}
-        />
-        <ImportFab />
-        <Export table={computedFlow().output} />
-        <Fab
-          onClick={() => toggleModal("charts")}
-          icon={<FaSolidChartSimple />}
-        />
-        <Fab
-          primary
-          onClick={() => toggleModal("analysis")}
-          icon={<FaSolidMagnifyingGlass />}
-        />
-      </FabContainer>
-      <AnalysisPanel
-        flow={computedFlow().flow}
-        update={setFlow}
-        onClose={() => closeModal("analysis")}
-        visible={hasModal("analysis")}
-      />
-      <ChartsPanel
-        table={computedFlow().output}
-        visible={hasModal("charts")}
-        onClose={() => closeModal("charts")}
-      />
-    </div>
-  );
+  const orderBy = (col: string) => setFlow(flowActions.orderBy(flow(), col));
+  return { value: flow, set: setFlow, order, orderBy };
 }
