@@ -30,7 +30,7 @@ export function AnalysisPanel(props: AnalysisPanelProps) {
     <Show when={props.visible}>
       <Modal close={props.onClose} title="Data Analysis">
         <div class={styles.Form}>
-          <Index each={props.flow.filter((s) => s.mode !== "order")}>
+          <Index each={props.flow}>
             {(s, i) => (
               <Layer
                 step={s()}
@@ -59,31 +59,33 @@ function Layer(props: {
   remove: () => void;
 }) {
   return (
-    <div class={styles.Step}>
-      {props.step.mode === "aggregate" && (
-        <AggregationLayer
-          aggregation={props.step}
-          update={(a) => props.update({ mode: "aggregate", ...a })}
-        />
-      )}
-      {props.step.mode === "filter" && (
-        <FilterLayer
-          filter={props.step}
-          update={(filters) => props.update({ mode: "filter", filters })}
-        />
-      )}
-      {props.step.mode === "compute" && (
-        <ComputeLayer
-          compute={props.step}
-          update={(value) => props.update({ mode: "compute", ...value })}
-        />
-      )}
-      {
-        <button class={styles.RemoveLayer} onClick={props.remove}>
-          <FaSolidXmark />
-        </button>
-      }
-    </div>
+    <Show when={props.step.mode !== "order"}>
+      <div class={styles.Step}>
+        {props.step.mode === "aggregate" && (
+          <AggregationLayer
+            aggregation={props.step}
+            update={(a) => props.update({ mode: "aggregate", ...a })}
+          />
+        )}
+        {props.step.mode === "filter" && (
+          <FilterLayer
+            filter={props.step}
+            update={(filters) => props.update({ mode: "filter", filters })}
+          />
+        )}
+        {props.step.mode === "compute" && (
+          <ComputeLayer
+            compute={props.step}
+            update={(value) => props.update({ mode: "compute", ...value })}
+          />
+        )}
+        {
+          <button class={styles.RemoveLayer} onClick={props.remove}>
+            <FaSolidXmark />
+          </button>
+        }
+      </div>
+    </Show>
   );
 }
 
