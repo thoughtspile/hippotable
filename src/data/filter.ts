@@ -30,7 +30,6 @@ export interface Filter {
 }
 
 export interface ColumnDescriptor {
-  name: string;
   availableConditions: Condition[];
   castValue: (v: string) => unknown;
 }
@@ -63,7 +62,7 @@ export const renderCondition: Record<
   startswith: (l, r) => `startswith(${l}, '${r || ""}')`,
   endswith: (l, r) => `endswith(${l}, '${r || ""}')`,
   contains: (l, r) =>
-    `match(${l}, /${escapeStringRegexp(String(r || ""))}/) != null`,
+    r ? `match(${l}, /${escapeStringRegexp(String(r || ""))}/i) != null` : null,
   matches: (l, r) => (r ? `match(${l}, /${r}/) != null` : null),
 };
 
@@ -88,15 +87,15 @@ function castValue(v: string, target: BaseType) {
   return v;
 }
 
-export function toColumnDescriptor(table: ColumnTable) {
-  return table.columnNames().map((col): ColumnDescriptor => {
-    const colType = getColumnType(table, col);
-    return {
-      name: col,
-      availableConditions: getConditions(colType),
-      castValue: (v) => castValue(v, colType),
-    };
-  });
+export function toColumnDescriptor(
+  col: string,
+  table: ColumnTable,
+): ColumnDescriptor {
+  const colType = getColumnType(table, col);
+  return {
+    availableConditions: getConditions(colType),
+    castValue: (v) => castValue(v, colType),
+  };
 }
 
 export function applyFilters(
@@ -109,7 +108,7 @@ export function applyFilters(
       `d['${f.name}']`,
       f.value === "" ? null : f.value,
     );
-    table = table.filter(expr);
+    expr && (table = table.filter(expr));
   }
   return table;
 }

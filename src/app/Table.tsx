@@ -1,4 +1,11 @@
-import { For, Show, createMemo, createSignal, onCleanup } from "solid-js";
+import {
+  For,
+  Show,
+  createEffect,
+  createMemo,
+  createSignal,
+  onCleanup,
+} from "solid-js";
 import "./Table.css";
 import type ColumnTable from "arquero/dist/types/table/column-table";
 import { FaSolidSortDown, FaSolidSortUp } from "solid-icons/fa";
@@ -18,16 +25,19 @@ export function Table(props: TableProps) {
 
   let tableRef: HTMLTableElement;
   const numRows = createMemo(() => props.table.numRows());
-  const virtualizer = createVirtualizer({
-    count: numRows(),
-    getScrollElement: () => tableRef,
-    estimateSize: () => rowHeight,
-    overscan: 5,
+  const virtualizer = createMemo(() => {
+    return createVirtualizer({
+      count: numRows(),
+      getScrollElement: () => tableRef,
+      estimateSize: () => rowHeight,
+      overscan: 5,
+    });
   });
   function remainingSize() {
     const total = numRows();
-    const lastItem = virtualizer.getVirtualItems().at(-1);
-    const lastIndex = Math.min(lastItem.index, total);
+    if (!total) return 0;
+    const lastItem = virtualizer().getVirtualItems().at(-1);
+    const lastIndex = Math.min(lastItem?.index ?? 0, total);
     return (total - lastIndex) * rowHeight;
   }
 
@@ -70,7 +80,7 @@ export function Table(props: TableProps) {
       <tbody>
         <tr
           style={{
-            height: `${virtualizer.getVirtualItems()[0].start}px`,
+            height: `${virtualizer().getVirtualItems()[0]?.start ?? 0}px`,
             border: "none",
           }}
         >
@@ -84,7 +94,11 @@ export function Table(props: TableProps) {
             )}
           </For>
         </tr>
-        <For each={virtualizer.getVirtualItems().map((el) => el.index)}>
+        <For
+          each={virtualizer()
+            .getVirtualItems()
+            .map((el) => el.index)}
+        >
           {(index) => (
             <Show when={index < numRows()}>
               <Row table={props.table} cols={cols()} index={index} />
