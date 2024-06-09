@@ -57,11 +57,15 @@ export function getOrder(flow: Flow): Order | undefined {
 
 export const flowActions = {
   addStep: (flow: Flow, mode: FlowStep["mode"]) => {
-    if (mode === "order") return flow;
     return [...flow, getStep(mode)];
   },
   removeStep: (flow: Flow, id: number) => {
-    return flow.filter((_, i) => i !== id);
+    const step = flow.find((_, i) => i === id);
+    const isColumnTweaker = step?.mode === "aggregate";
+    // further steps can reference removed columns
+    return isColumnTweaker
+      ? flow.slice(0, flow.indexOf(step))
+      : flow.filter((s) => s !== step);
   },
   changeStep: (flow: Flow, id: number, step: FlowStep) => {
     return flow.map((s, i) => (i === id ? step : s));
