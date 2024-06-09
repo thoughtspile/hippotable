@@ -18,24 +18,44 @@ interface ChartProps {
 }
 
 export function ChartItem(props: ChartProps) {
+  function setType(t: ChartType) {
+    const axes = Array.from({ length: chartTypeAxes[t]?.length ?? 0 }).map(
+      (_, i) => props.config.axes[i] ?? null,
+    );
+    props.onChange({ ...props.config, type: t, axes });
+  }
+  function setAxis(i: number, col: string) {
+    const axes = [...props.config.axes];
+    axes[i] = col;
+    props.onChange({ ...props.config, axes });
+  }
+
   let canvas: HTMLCanvasElement;
   let chart: Chart<any> | undefined;
+
   createEffect(() => {
+    chart && chart.destroy();
+
     if (!isChartReady(props.config)) return;
+    const colNames = props.table.columnNames();
+    for (const axis of props.config.axes) {
+      if (!colNames.includes(axis)) return;
+    }
+
     const numericLabel =
       getColumnType(props.table, props.config.axes[0]) === "number";
     const table = numericLabel
       ? props.table.orderby(props.config.axes[0])
       : props.table;
     const [labels, ...datasets] = props.config.axes.map((a) =>
-      Array.from(table.values(a) as any),
+      Array.from(table.columnArray(a)),
     );
     const scales: ScaleChartOptions<any>["scales"] = numericLabel
       ? {
           x: { type: "linear", min: labels[0], max: labels[labels.length - 1] },
         }
       : {};
-    chart && chart.destroy();
+
     chart = new Chart(canvas, {
       type: props.config.type,
       data: {
@@ -46,6 +66,7 @@ export function ChartItem(props: ChartProps) {
         })),
       },
       options: {
+        animation: false,
         scales,
         plugins: {
           legend: {
@@ -55,17 +76,6 @@ export function ChartItem(props: ChartProps) {
       },
     });
   });
-  function setType(t: ChartType) {
-    const axes = Array.from({ length: chartTypeAxes[t]?.length ?? 0 }).map(
-      () => null,
-    );
-    props.onChange({ ...props.config, type: t, axes });
-  }
-  function setAxis(i: number, col: string) {
-    const axes = [...props.config.axes];
-    axes[i] = col;
-    props.onChange({ ...props.config, axes });
-  }
 
   return (
     <div>
