@@ -10,6 +10,13 @@
   padding: 1rem;
 }
 
+.Welcome__error {
+  background: white;
+  padding: 1rem;
+  border-radius: 1rem;
+  color: #ff1e66;
+}
+
 .Spinner {
   position: fixed;
   top: 50%;

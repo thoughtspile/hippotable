@@ -1,9 +1,15 @@
-import { createSignal, onCleanup, onMount } from "solid-js";
+import { createMemo, onCleanup, onMount } from "solid-js";
 import "./Table.css";
 import type ColumnTable from "arquero/dist/types/table/column-table";
 import { AnalysisPanel } from "./Analysis";
 import { Fab, FabContainer } from "./ui/Fab";
-import { createPipeline } from "../data/pipeline";
+import {
+  computeFlow,
+  getOrder,
+  type Flow,
+  flowActions,
+  parseFlow,
+} from "../data/pipeline";
 import { Export } from "./Export";
 import { ChartsPanel } from "./Charts";
 import { ImportFab } from "./ImportFab";
@@ -12,38 +18,21 @@ import { GH_REPO } from "../constants";
 import { Table } from "./Table";
 import { FaSolidChartSimple, FaSolidMagnifyingGlass } from "solid-icons/fa";
 import styles from "./Workspace.module.css";
+import { createUrlPersistedSignal } from "./helpers/createUrlPersistedSignal";
 
-type Modals = "analysis" | "charts";
+type WorkspaceProps = { table: ColumnTable };
 
-export function Workspace(props: { table: ColumnTable }) {
-  const [modalStack, setModalStack] = createSignal<Modals[]>([]);
-  const hasModal = (m: Modals) => modalStack().includes(m);
-  const closeModal = (m: Modals) =>
-    setModalStack(modalStack().filter((t) => t !== m));
-  const toggleModal = (m: Modals) =>
-    hasModal(m) ? closeModal(m) : setModalStack([...modalStack(), m]);
-  const [pipeline, setPipeline] = createSignal(createPipeline(props.table));
-
-  function onKey(e: KeyboardEvent) {
-    const modalCount = modalStack().length;
-    e.code === "Escape" &&
-      modalCount &&
-      closeModal(modalStack()[modalCount - 1]);
-  }
-
-  onMount(() => {
-    window.addEventListener("keydown", onKey);
-  });
-  onCleanup(() => {
-    window.removeEventListener("keydown", onKey);
-  });
+export function Workspace(props: WorkspaceProps) {
+  const modals = createModalsStore();
+  const flow = createFlowStore();
+  const computedFlow = createMemo(() => computeFlow(props.table, flow.value()));
 
   return (
     <div class={styles.Workspace}>
       <Table
-        table={pipeline().output}
-        orderBy={(col) => setPipeline(pipeline().orderBy(col))}
-        order={pipeline().order}
+        table={computedFlow().output}
+        orderBy={flow.orderBy}
+        order={flow.order()}
       />
       <FabContainer>
         <Fab
@@ -51,28 +40,83 @@ export function Workspace(props: { table: ColumnTable }) {
           onClick={() => window.open(GH_REPO, "_blank")}
         />
         <ImportFab />
-        <Export table={pipeline().output} />
+        <Export table={computedFlow().output} />
         <Fab
-          onClick={() => toggleModal("charts")}
+          onClick={() => modals.toggle("charts")}
           icon={<FaSolidChartSimple />}
         />
         <Fab
           primary
-          onClick={() => toggleModal("analysis")}
+          onClick={() => modals.toggle("analysis")}
           icon={<FaSolidMagnifyingGlass />}
         />
       </FabContainer>
       <AnalysisPanel
-        pipeline={pipeline()}
-        update={setPipeline}
-        onClose={() => closeModal("analysis")}
-        visible={hasModal("analysis")}
+        flow={computedFlow().flow}
+        update={flow.set}
+        onClose={() => modals.close("analysis")}
+        visible={modals.has("analysis")}
       />
       <ChartsPanel
-        table={pipeline().output}
-        visible={hasModal("charts")}
-        onClose={() => closeModal("charts")}
+        table={computedFlow().output}
+        visible={modals.has("charts")}
+        onClose={() => modals.close("charts")}
       />
     </div>
   );
+}
+
+type Modals = "analysis" | "charts";
+function createModalsStore() {
+  const [modalStack, setModalStack] = createUrlPersistedSignal<Modals[]>({
+    param: "modals",
+    parse: (sp) =>
+      sp
+        ? sp
+            .split(",")
+            .filter((m): m is Modals => m === "analysis" || m === "charts")
+        : [],
+    serialize: (modals) => (modals.length ? modals.join(",") : null),
+  });
+  const has = (m: Modals) => modalStack().includes(m);
+  const close = (m: Modals) =>
+    setModalStack(modalStack().filter((t) => t !== m));
+  const toggle = (m: Modals) =>
+    has(m) ? close(m) : setModalStack([...modalStack(), m]);
+  const pop = () => {
+    const modalCount = modalStack().length;
+    modalCount && close(modalStack()[modalCount - 1]);
+  };
+
+  function onKey(e: KeyboardEvent) {
+    e.code === "Escape" && pop();
+  }
+  onMount(() => {
+    window.addEventListener("keydown", onKey);
+  });
+  onCleanup(() => {
+    window.removeEventListener("keydown", onKey);
+  });
+
+  return { has, close, toggle };
+}
+
+function createFlowStore() {
+  const [flow, setFlow] = createUrlPersistedSignal<Flow>({
+    param: "flow",
+    serialize: (flow) => {
+      const safeFlow = parseFlow(flow);
+      return flow.length ? btoa(JSON.stringify(safeFlow)) : null;
+    },
+    parse: (raw) => {
+      try {
+        return parseFlow(JSON.parse(atob(raw)));
+      } catch {
+        return [];
+      }
+    },
+  });
+  const order = () => getOrder(flow());
+  const orderBy = (col: string) => setFlow(flowActions.orderBy(flow(), col));
+  return { value: flow, set: setFlow, order, orderBy };
 }

@@ -1,18 +1,27 @@
 import type ColumnTable from "arquero/dist/types/table/column-table";
 import escapeStringRegexp from "escape-string-regexp";
 import { getColumnType, type BaseType } from "./columnConfig";
+import { enums, object, string, unknown } from "banditypes";
 
-export type Condition =
-  | "eq"
-  | "neq"
-  | "lt"
-  | "lte"
-  | "gt"
-  | "gte"
-  | "startswith"
-  | "endswith"
-  | "contains"
-  | "matches";
+const conditions = [
+  "eq",
+  "neq",
+  "lt",
+  "lte",
+  "gt",
+  "gte",
+  "startswith",
+  "endswith",
+  "contains",
+  "matches",
+] as const;
+export type Condition = (typeof conditions)[number];
+
+export const parseFilter = object<Filter>({
+  name: string(),
+  value: unknown(),
+  condition: enums(conditions),
+});
 
 export interface Filter {
   name?: string;
@@ -21,7 +30,6 @@ export interface Filter {
 }
 
 export interface ColumnDescriptor {
-  name: string;
   availableConditions: Condition[];
   castValue: (v: string) => unknown;
 }
@@ -54,7 +62,7 @@ export const renderCondition: Record<
   startswith: (l, r) => `startswith(${l}, '${r || ""}')`,
   endswith: (l, r) => `endswith(${l}, '${r || ""}')`,
   contains: (l, r) =>
-    `match(${l}, /${escapeStringRegexp(String(r || ""))}/) != null`,
+    r ? `match(${l}, /${escapeStringRegexp(String(r || ""))}/i) != null` : null,
   matches: (l, r) => (r ? `match(${l}, /${r}/) != null` : null),
 };
 
@@ -79,15 +87,15 @@ function castValue(v: string, target: BaseType) {
   return v;
 }
 
-export function toColumnDescriptor(table: ColumnTable) {
-  return table.columnNames().map((col): ColumnDescriptor => {
-    const colType = getColumnType(table, col);
-    return {
-      name: col,
-      availableConditions: getConditions(colType),
-      castValue: (v) => castValue(v, colType),
-    };
-  });
+export function toColumnDescriptor(
+  col: string,
+  table: ColumnTable,
+): ColumnDescriptor {
+  const colType = getColumnType(table, col);
+  return {
+    availableConditions: getConditions(colType),
+    castValue: (v) => castValue(v, colType),
+  };
 }
 
 export function applyFilters(
@@ -100,7 +108,7 @@ export function applyFilters(
       `d['${f.name}']`,
       f.value === "" ? null : f.value,
     );
-    table = table.filter(expr);
+    expr && (table = table.filter(expr));
   }
   return table;
 }

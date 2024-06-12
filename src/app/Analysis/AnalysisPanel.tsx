@@ -8,45 +8,43 @@ import {
   type Flow,
   type FlowStep,
   type FlowStepComputed,
+  type FlowComputed,
 } from "../../data/pipeline";
 import { FormButton, SegmentedControl } from "../ui/Form";
 import styles from "./AnalysisPanel.module.css";
-import type { Pipeline } from "../../data/pipeline";
 import { ComputeLayer } from "./ComputeLayer";
 
 interface AnalysisPanelProps {
   visible: boolean;
   onClose: () => void;
-  pipeline: Pipeline;
-  update: (f: Pipeline) => void;
+  flow: FlowComputed;
+  update: (f: Flow) => void;
 }
 
 export function AnalysisPanel(props: AnalysisPanelProps) {
-  const staging = () => props.pipeline.flow.filter((s) => s.mode !== "order");
   function addStep(mode: FlowStep["mode"]) {
-    setStaging(flowActions.addStep(staging(), mode));
-  }
-  function setStaging(value: Flow) {
-    props.update(props.pipeline.setFlow(value));
+    props.update(flowActions.addStep(props.flow, mode));
   }
 
   return (
     <Show when={props.visible}>
       <Modal close={props.onClose} title="Data Analysis">
         <div class={styles.Form}>
-          <Index each={staging().filter((s) => s.mode !== "order")}>
+          <Index each={props.flow}>
             {(s, i) => (
               <Layer
                 step={s()}
-                update={(s) =>
-                  setStaging(flowActions.changeStep(staging(), i, s))
+                update={(step) =>
+                  props.update(flowActions.changeStep(props.flow, i, step))
                 }
-                remove={() => setStaging(flowActions.removeStep(staging(), i))}
+                remove={() =>
+                  props.update(flowActions.removeStep(props.flow, i))
+                }
               />
             )}
           </Index>
           <AddLayer
-            exclude={staging().at(-1)?.mode === "filter" ? "filter" : null}
+            exclude={props.flow.at(-1)?.mode === "filter" ? "filter" : null}
             insert={addStep}
           />
         </div>
@@ -61,31 +59,33 @@ function Layer(props: {
   remove: () => void;
 }) {
   return (
-    <div class={styles.Step}>
-      {props.step.mode === "aggregate" && (
-        <AggregationLayer
-          aggregation={props.step}
-          update={(a) => props.update({ mode: "aggregate", ...a })}
-        />
-      )}
-      {props.step.mode === "filter" && (
-        <FilterLayer
-          filter={props.step}
-          update={(filters) => props.update({ mode: "filter", filters })}
-        />
-      )}
-      {props.step.mode === "compute" && (
-        <ComputeLayer
-          compute={props.step}
-          update={(value) => props.update({ mode: "compute", ...value })}
-        />
-      )}
-      {
-        <button class={styles.RemoveLayer} onClick={props.remove}>
-          <FaSolidXmark />
-        </button>
-      }
-    </div>
+    <Show when={props.step.mode !== "order"}>
+      <div class={styles.Step}>
+        {props.step.mode === "aggregate" && (
+          <AggregationLayer
+            aggregation={props.step}
+            update={(a) => props.update({ mode: "aggregate", ...a })}
+          />
+        )}
+        {props.step.mode === "filter" && (
+          <FilterLayer
+            filter={props.step}
+            update={(filters) => props.update({ mode: "filter", filters })}
+          />
+        )}
+        {props.step.mode === "compute" && (
+          <ComputeLayer
+            compute={props.step}
+            update={(value) => props.update({ mode: "compute", ...value })}
+          />
+        )}
+        {
+          <button class={styles.RemoveLayer} onClick={props.remove}>
+            <FaSolidXmark />
+          </button>
+        }
+      </div>
+    </Show>
   );
 }
 

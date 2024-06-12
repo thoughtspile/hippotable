@@ -1,30 +1,22 @@
 import {
   For,
   Show,
+  createEffect,
   createMemo,
   createSignal,
   onCleanup,
-  onMount,
 } from "solid-js";
 import "./Table.css";
 import type ColumnTable from "arquero/dist/types/table/column-table";
 import { FaSolidSortDown, FaSolidSortUp } from "solid-icons/fa";
 import { createVirtualizer } from "@tanstack/solid-virtual";
-import { AnalysisPanel } from "./Analysis";
-import { Fab, FabContainer } from "./ui/Fab";
 import type { Order } from "../data/order";
-import { createPipeline } from "../data/pipeline";
-import { Export } from "./Export";
-import { ChartsPanel } from "./Charts";
-import { ImportFab } from "./ImportFab";
-import { GitHubLogo } from "./GitHubLogo";
-import { GH_REPO } from "../constants";
 
 const rowHeight = 19;
 
 type TableProps = {
   table: ColumnTable;
-  order: Order;
+  order?: Order | null;
   orderBy: (c: string) => void;
 };
 export function Table(props: TableProps) {
@@ -33,16 +25,19 @@ export function Table(props: TableProps) {
 
   let tableRef: HTMLTableElement;
   const numRows = createMemo(() => props.table.numRows());
-  const virtualizer = createVirtualizer({
-    count: numRows(),
-    getScrollElement: () => tableRef,
-    estimateSize: () => rowHeight,
-    overscan: 5,
+  const virtualizer = createMemo(() => {
+    return createVirtualizer({
+      count: numRows(),
+      getScrollElement: () => tableRef,
+      estimateSize: () => rowHeight,
+      overscan: 5,
+    });
   });
   function remainingSize() {
     const total = numRows();
-    const lastItem = virtualizer.getVirtualItems().at(-1);
-    const lastIndex = Math.min(lastItem.index, total);
+    if (!total) return 0;
+    const lastItem = virtualizer().getVirtualItems().at(-1);
+    const lastIndex = Math.min(lastItem?.index ?? 0, total);
     return (total - lastIndex) * rowHeight;
   }
 
@@ -85,7 +80,7 @@ export function Table(props: TableProps) {
       <tbody>
         <tr
           style={{
-            height: `${virtualizer.getVirtualItems()[0].start}px`,
+            height: `${virtualizer().getVirtualItems()[0]?.start ?? 0}px`,
             border: "none",
           }}
         >
@@ -99,7 +94,11 @@ export function Table(props: TableProps) {
             )}
           </For>
         </tr>
-        <For each={virtualizer.getVirtualItems().map((el) => el.index)}>
+        <For
+          each={virtualizer()
+            .getVirtualItems()
+            .map((el) => el.index)}
+        >
           {(index) => (
             <Show when={index < numRows()}>
               <Row table={props.table} cols={cols()} index={index} />
@@ -128,14 +127,14 @@ function Row(props: RowProps) {
 }
 
 interface HeaderCellProps {
-  order: Order;
+  order?: Order | null;
   name: string;
   orderBy: (c: string) => void;
   width: number;
   ref: (e: HTMLElement) => void;
 }
 function HeaderCell(props: HeaderCellProps) {
-  const dir = () => (props.order.col === props.name ? props.order.dir : null);
+  const dir = () => (props.order?.col === props.name ? props.order?.dir : null);
   return (
     <th
       ref={props.ref}

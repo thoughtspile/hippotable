@@ -1,4 +1,10 @@
-import { Show, createResource, createSignal, onMount } from "solid-js";
+import {
+  ErrorBoundary,
+  Show,
+  createResource,
+  createSignal,
+  onMount,
+} from "solid-js";
 import { parseCsv } from "../data/data";
 import { Welcome } from "./Welcome";
 import { accessSource, persistSource } from "./fs";
@@ -22,7 +28,17 @@ export function Dashboard() {
       when={table()}
       fallback={<Welcome onSubmit={persistSource} loading={loading()} />}
     >
-      <Workspace table={table()} />
+      <ErrorBoundary
+        fallback={(err) => (
+          <Welcome
+            error={String(err)}
+            onSubmit={persistSource}
+            loading={loading()}
+          />
+        )}
+      >
+        <Workspace table={table()} />
+      </ErrorBoundary>
     </Show>
   );
 }

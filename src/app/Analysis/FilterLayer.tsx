@@ -4,7 +4,6 @@ import sortBy from "just-sort-by";
 import {
   type Condition,
   type Filter,
-  type ColumnDescriptor,
   isFilterComplete,
   toColumnDescriptor,
   conditionLabel,
@@ -18,9 +17,6 @@ export interface FilterLayerProps {
 }
 
 export function FilterLayer(props: FilterLayerProps) {
-  const columns = createMemo(() =>
-    sortBy(toColumnDescriptor(props.filter.input), (c) => c.name),
-  );
   function filterList(): Partial<Filter>[] {
     const items = props.filter.filters;
     return !items.length || items.every(isFilterComplete)
@@ -42,7 +38,7 @@ export function FilterLayer(props: FilterLayerProps) {
       <Index each={filterList()}>
         {(filter, i) => (
           <FilterControl
-            columns={columns()}
+            table={props.filter.input}
             filter={filter()}
             update={(f) => setFilter(i, f)}
           />
@@ -55,11 +51,19 @@ export function FilterLayer(props: FilterLayerProps) {
 interface FilterControlProps {
   filter: Partial<Filter>;
   update: (f: Partial<Filter>) => void;
-  columns: ColumnDescriptor[];
+  table: ColumnTable;
 }
 function FilterControl(props: FilterControlProps) {
-  const activeColumn = () =>
-    props.columns.find((c) => c.name === props.filter.name);
+  const activeColumn = createMemo(() =>
+    props.filter.name
+      ? toColumnDescriptor(props.filter.name, props.table)
+      : null,
+  );
+  const columns = () =>
+    sortBy(props.table.columnNames()).map((col) => ({
+      label: col,
+      value: col,
+    }));
   return (
     <SegmentedControl class={styles.FilterControl}>
       <Select
@@ -67,13 +71,10 @@ function FilterControl(props: FilterControlProps) {
         onChange={(e) =>
           props.update({ ...props.filter, name: e.target.value })
         }
-        options={props.columns.map((col) => ({
-          label: col.name,
-          value: col.name,
-        }))}
+        options={columns()}
       />
       <Select
-        disabled={!activeColumn()}
+        disabled={!props.filter.name}
         value={props.filter.condition}
         options={activeColumn()?.availableConditions?.map((c) => ({
           value: c,
@@ -87,7 +88,7 @@ function FilterControl(props: FilterControlProps) {
         }
       />
       <Input
-        disabled={!activeColumn()}
+        disabled={!props.filter.name}
         value={props.filter.value == null ? "" : String(props.filter.value)}
         onChange={(e) =>
           props.update({

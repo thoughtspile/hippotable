@@ -1,8 +1,13 @@
 import type ColumnTable from "arquero/dist/types/table/column-table";
-import { applyAggregation, type Aggregation } from "./aggregation";
-import { applyFilters, type Filter } from "./filter";
+import {
+  applyAggregation,
+  type Aggregation,
+  parseAggregation,
+} from "./aggregation";
+import { applyFilters, parseFilter, type Filter } from "./filter";
 import { applyOrder, type Order } from "./order";
 import { applyComputation, type Computed } from "./computed";
+import { array, enums, object, objectLoose, string } from "banditypes";
 
 export type FlowStep =
   | ({ mode: "aggregate" } & Aggregation)
@@ -26,48 +31,59 @@ function getStep(mode: FlowStep["mode"]): FlowStep {
   }
 }
 
+const parseStep = object({
+  mode: enums(["order"]),
+  col: string(),
+  dir: enums(["asc", "desc"]),
+})
+  .or(
+    object({
+      mode: enums(["filter"]),
+      filters: array(parseFilter),
+    }),
+  )
+  .or(
+    objectLoose({
+      mode: enums(["aggregate"]),
+    }).map((s) => ({ mode: s.mode, ...parseAggregation(s) })),
+  );
+export const parseFlow = array<FlowStep>(parseStep);
+
+export function getOrder(flow: Flow): Order | undefined {
+  return flow.find(
+    (s): s is FlowStep & { mode: "order" } => s.mode === "order",
+  );
+}
+
 export const flowActions = {
   addStep: (flow: Flow, mode: FlowStep["mode"]) => {
-    if (mode === "order") return flow;
     return [...flow, getStep(mode)];
   },
   removeStep: (flow: Flow, id: number) => {
-    return flow.filter((_, i) => i !== id);
+    const step = flow.find((_, i) => i === id);
+    const isColumnTweaker = step?.mode === "aggregate";
+    // further steps can reference removed columns
+    return isColumnTweaker
+      ? flow.slice(0, flow.indexOf(step))
+      : flow.filter((s) => s !== step);
   },
   changeStep: (flow: Flow, id: number, step: FlowStep) => {
     return flow.map((s, i) => (i === id ? step : s));
   },
-};
-
-export interface Pipeline {
-  input: ColumnTable;
-  output: ColumnTable;
-  orderBy: (col: string) => Pipeline;
-  setFlow: (flow: Flow) => Pipeline;
-  order: Order;
-  flow: FlowComputed;
-}
-
-const emptyOrder = () => ({ col: null, dir: "asc" }) as const;
-export function createPipeline(
-  table: ColumnTable,
-  flow: Flow = [],
-  order: Order = emptyOrder(),
-): Pipeline {
-  const cache = computeFlow(table, [...flow, { mode: "order", ...order }]);
-  return {
-    input: table,
-    output: cache.output,
-    flow: cache.flow,
-    order,
-    orderBy: (col) =>
-      createPipeline(table, flow, {
+  orderBy: (flow: Flow, col: string) => {
+    const currentOrder = getOrder(flow);
+    return flow
+      .filter((s) => s.mode !== "order")
+      .concat({
+        mode: "order",
         col,
-        dir: col === order.col && order.dir === "asc" ? "desc" : "asc",
-      }),
-    setFlow: (flow) => createPipeline(table, flow, order),
-  };
-}
+        dir:
+          col === currentOrder?.col && currentOrder?.dir === "asc"
+            ? "desc"
+            : "asc",
+      });
+  },
+};
 
 export function computeFlow(table: ColumnTable, flow: Flow) {
   let current = table;

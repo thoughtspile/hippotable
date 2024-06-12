@@ -23,6 +23,10 @@
   filter: brightness(1.2);
 }
 
+.Fab input {
+  width: 0;
+}
+
 .FabHolder {
   width: 0;
   position: relative;
