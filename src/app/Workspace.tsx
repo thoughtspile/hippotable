@@ -16,7 +16,7 @@ import { ImportFab } from "./ImportFab";
 import { GitHubLogo } from "./GitHubLogo";
 import { GH_REPO } from "../constants";
 import { Table } from "./Table";
-import { FaSolidChartSimple, FaSolidMagnifyingGlass } from "solid-icons/fa";
+import { FaSolidChartSimple, FaSolidFlask } from "solid-icons/fa";
 import styles from "./Workspace.module.css";
 import { createUrlPersistedSignal } from "./helpers/createUrlPersistedSignal";
 
@@ -48,7 +48,7 @@ export function Workspace(props: WorkspaceProps) {
         <Fab
           primary
           onClick={() => modals.toggle("analysis")}
-          icon={<FaSolidMagnifyingGlass />}
+          icon={<FaSolidFlask />}
         />
       </FabContainer>
       <AnalysisPanel
